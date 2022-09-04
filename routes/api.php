@@ -3,13 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AuthController, ProfileController,
-    WalletController, ArtisanController, UserController
-};
-use App\Util\Flutterwave;
+    WalletController, UserController};
 
 Route::group(['prefix' => 'v1'], function () {
-    /*Route::get("/getAdverts", [UserController::class, "getAdverts"]);
-    Route::post("/postJobCategory", [UserController::class, "postJobCategory"]);
+    /*Route::post("/postJobCategory", [UserController::class, "postJobCategory"]);
     Route::post("/create_chefs", [UserController::class, "createChef"]);*/
     Route::group([
         'prefix' => 'auth'
@@ -21,7 +18,6 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post("/email/verify/", [AuthController::class, "verifyUser"]);
         Route::post("/password/reset", [AuthController::class, "resetPassword"]);
         Route::post("/reset-password", [AuthController::class, "password_reset"]);
-        Route::post("/create-admin", [AuthController::class, "createAdmin"]);
     });
 
     Route::group([
@@ -57,7 +53,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     });
     
     Route::group([
-        'prefix' => 'profile'
+        'prefix' => 'user'
     ], function () {
         Route::post("/save-profile-details", [ProfileController::class, "saveProfileDetails"]);
         Route::post("/save-client-profile-details", [ProfileController::class, "saveClientUserDetails"]);
@@ -69,38 +65,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     ], function () {
         Route::get("/getwallet", [WalletController::class, "getWallet"]);
         Route::get("/checkuserbankdetails/", [WalletController::class, "checkUserBankDetails"]);
-        Route::post("/set-wallet-pin", [WalletController::class, "setWalletPin"]);
-        Route::get("/check-wallet-pin", [WalletController::class, "checkWalletPin"]);
         Route::post("/resolve", [WalletController::class, "resolveAccount"]);
         Route::post("/transfer", [WalletController::class, "transfer"]);
     });
 
-});
-
-
-Route::get('/flutterwave-callback', function () {
-    return $request->all();
-});
-
-Route::post('/flutterwave-testing', function (Request $request) {
-    $payment = new Flutterwave();
-    $reference = $payment->generateReference('rasaqi');
-    $data = [
-        'tx_ref' => $reference,
-        'amount' => 50000,
-        'currency' => 'NGN',
-        'redirect_url' => url('/flutterwave-callback'),
-        'customer' => [
-            'email' => 'ituaosemeilu234@gmail.com',
-            'phonenumber' => '08114800769',
-            'name' => 'Itua Endurance',
-        ],
-        'customizations' => [
-            'title' => 'Chef Order',
-            'description' => 'Home Service of Pasta and Chicken'
-        ]
-    ];
-
-    $initials = $payment->initializePayment($data);
-    return $initials;
 });

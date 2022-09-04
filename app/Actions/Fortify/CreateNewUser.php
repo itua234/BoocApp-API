@@ -29,19 +29,18 @@ class CreateNewUser implements CreatesNewUsers
                 'email' => $input['email'],
                 'phone' => $input['phone'],
                 'password' => $input['password'],
-                'is_user' => ($input['user_type'] == 'user') ? 1 : 0,
-                'is_chef' => ($input['user_type'] == 'chef') ? 1 : 0,
-                'is_admin' => ($input['user_type'] == 'admin') ? 1 : 0,
-                'status' => ($input['user_type'] == 'chef') ? '0' : '1'
+                'user_type' => $input['user_type'],
+                'is_verified' => ($input['user_type'] == 'chef') ? '0' : '1'
             ]), function (User $user) use ($input) {
                 $user->attachRole($input['user_type']);
 
                 if($input['user_type'] != "admin"):
-                    $user->referralCode()->create([
-                        'code' => Helper::generateReferral($user->firstname),
-                    ]);
 
                     if($input['user_type'] == "chef"):
+                        $user->referralCode()->create([
+                            'code' => Helper::generateReferral($user->firstname),
+                        ]);
+
                         Wallet::create([
                             'user_id' => $user->id
                         ]);

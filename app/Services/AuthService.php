@@ -20,14 +20,13 @@ class AuthService
     {
         try{
             $user = User::where("email", $request->email)->first();
-            $role = Role::find($request->role_id);
             if(!$user || !password_verify($request->password, $user->password)):
                 $message = "Wrong credentials";
                 return CustomResponse::error($message, 400);
-            elseif((int)$user->is_verified !== 1):
+            elseif(!$user->email_verified_at):
                 $message = "Email address not verified, please verify your email before you can login";
                 return CustomResponse::error($message, 401);
-            elseif(!$user->hasRole($role->name)):
+            elseif(!$user->hasRole($request->user_type)):
                 $message = "You are not permitted";
                 return CustomResponse::error($message, 401);
             endif;
@@ -144,7 +143,6 @@ class AuthService
                         $user = User::where('email', $check->email)->first();
                         User::where('id', $user->id)
                         ->update([
-                            'is_verified' => 1, 
                             'email_verified_at' => $current_time
                         ]);
 
@@ -182,7 +180,6 @@ class AuthService
                     $user = User::where('email', $check->email)->first();
                     User::where('id', $user->id)
                     ->update([
-                        'is_verified' => 1, 
                         'email_verified_at' => $current_time
                     ]);
 

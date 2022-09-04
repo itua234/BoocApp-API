@@ -9,11 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laratrust\Traits\LaratrustUserTrait;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    use TwoFactorAuthenticatable;
     use LaratrustUserTrait;
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -23,12 +21,10 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'is_user',
-        'is_chef',
-        'is_admin',
+        'user_type',
         'is_verified',
-        'status',
-        'fcm_token'
+        'fcm_token',
+        'profile_photo_path'
     ];
 
     protected $hidden = [

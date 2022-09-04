@@ -20,7 +20,7 @@ class LoginRequest extends FormRequest
 
             'password'  =>   'required',
 
-            'role_id' => 'required|numeric'
+            'user_type' => 'required|string'
         ];
     }
 
