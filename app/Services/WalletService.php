@@ -15,7 +15,6 @@ class WalletService
     public function resolveAccount(ResolveAccount $request)
     {
         $wallet = auth()->user()->wallet;
-    
         try{
             $payment = new Paystack;
             $response = $payment->resolve(
@@ -34,11 +33,8 @@ class WalletService
                     'account_number' => Crypt::encryptString($response['data']["account_number"]),
                     'account_name' => Crypt::encryptString($response['data']["account_name"])
                 ]);
-
-                $account->account_number = Crypt::decryptString($account->account_number);
-                $account->account_name = Crypt::decryptString($account->account_name);
                 
-                return CustomResponse::success($response['message'], $account);
+                return CustomResponse::success($response['message'], new WalletResource($wallet));
             else:
                 return CustomResponse::error($response['message'], 422);
             endif;
@@ -53,7 +49,7 @@ class WalletService
     {
         $wallet = auth()->user()->wallet;
         try{
-            if($wallet->has_bank_details):
+            /*if($wallet->has_bank_details):
                 $wallet->account_name = Crypt::decryptString($wallet->account_name);
                 $wallet->account_number = Crypt::decryptString($wallet->account_number);
             endif;
@@ -67,7 +63,7 @@ class WalletService
                 unset($array->updated_at);
             endforeach;
         
-            $wallet->transactions = $transactions;
+            $wallet->transactions = $transactions;*/
             return CustomResponse::success('successful', $wallet);
         }catch(\Exception $e){
             $message = $e->getMessage();
@@ -91,18 +87,21 @@ class WalletService
 
     public function checkUserBankDetails()
     {
-        $user = auth()->user();
-        $wallet = User::find($user->id)->wallet;
+        $wallet = auth()->user()->wallet;
         try{
-            if(!$wallet->has_bank_details):
+            $bank = $wallet->bankAccount;
+            if(!$bank):
                 $message = "Account Details not found";
                 return CustomResponse::error($message, 404);
+            else:
+                $bank->account_name = Crypt::decryptString($bank->account_name);
+                $bank->account_number = Crypt::decryptString($bank->account_number);
             endif;
         }catch(\Exception $e){
             $message = $e->getMessage();
             return CustomResponse::error($message);
         }
-        return CustomResponse::success('Wallet details:', new WalletResource($wallet));
+        return CustomResponse::success('Wallet details:', $bank);
     }
 
 }

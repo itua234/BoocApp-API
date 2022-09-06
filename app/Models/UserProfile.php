@@ -14,8 +14,9 @@ class UserProfile extends Model
         'user_id',
         'latitude',
         'longitude',
-        'town',
-        'photo',
+        'city',
+        'state',
+        'address'
     ];
 
     protected $hidden = [

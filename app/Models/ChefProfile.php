@@ -21,7 +21,6 @@ class ChefProfile extends Model
         'longitude',
         'available',
         'status',
-        'photo'
     ];
 
     protected $hidden = [

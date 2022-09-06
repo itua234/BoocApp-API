@@ -13,17 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('dish_extras', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('chef_id');
-            $table->foreign('chef_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->unsignedBigInteger('dish_id');
+            $table->foreign('dish_id')->references('id')->on('dishes')->onDelete('cascade');
             $table->string('name');
-            $table->string('image');
+            //$table->string('description');
+            //$table->string('image');
             $table->string('measurement');
-            //$table->unsignedBigInteger('measurement_id');
-            //$table->foreign('measurement_id')->references('id')->on('meaasurements')->onDelete('cascade');
             $table->string('price');
             $table->string('profits');
             $table->timestamps();
@@ -37,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('dish_extras');
     }
 };

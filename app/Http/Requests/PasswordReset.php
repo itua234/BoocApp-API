@@ -6,18 +6,19 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ResolveAccount extends FormRequest
+class PasswordReset extends FormRequest
 {
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
 
-    public function rules(): array
+    public function rules()
     {
         return [
-            'account_number' => 'required|',
-            'bank_code' => 'required'
+            'email'     => "required|email|exists:users",
+            'password'  =>   'required|min:8|confirmed',
+            'password_confirmation' => 'required',
         ];
     }
 

@@ -17,15 +17,24 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('nin')->unique()->nullable();
-            $table->string('bvn')->unique()->nullable();
-            $table->string('driving_license')->nullable();
-            $table->integer('driving_license_number')->unique()->nullable();
-            $table->string('residential_address')->nullable();
+
+            $table->string('identification_card')->nullable();
+            
+            $table->string('video_verification')->nullable();
+
+            $table->enum('is_certified', [0, 1])->nullable();
+            $table->string('certificate')->nullable();
+
+            $table->enum('is_restaurant', [0, 1])->nullable();
+            $table->string('cac_registration')->nullable();
+            $table->string('restaurant_address', 255)->nullable();
+
+            $table->string('house_address', 255)->nullable();
+            $table->string('city') ->nullable();
+            $table->string('state') ->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->string('photo')->nullable();
-            $table->enum('available', [0, 1]); // 0 - Offline, 1 - Online
+            $table->enum('available', [0, 1])->default(1); // 0 - Offline, 1 - Online
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Util\CustomResponse;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\{LoginRequest, VerifyAccount, 
-    ResetPassword, ChangePassword, CreateUser};
+    ResetPassword, ChangePassword, CreateUser, PasswordReset as PassReset};
 use App\Mail\{VerifyAccountMail, ForgetPasswordMail};
 use Illuminate\Support\Facades\{DB, Mail, Hash, Http, Socialite};
 use App\Actions\Fortify\{CreateNewUser, ResetUserPassword};
@@ -105,16 +105,28 @@ class AuthService
 
     public function sendverificationcode($email)
     {
-        $user = User::where(['email' => $email])->first();
-        
         try{
+            $user = User::where(['email' => $email])->first();
             $code = mt_rand(1000, 9999);
-            DB::table('user_verification')
-            ->where(['email' => $user->email])
-            ->update([
-                'code' => $code, 
-                'expiry_time' => Carbon::now()->addMinutes(6)
-            ]);
+            $expiry_time = Carbon::now()->addMinutes(6);
+
+            $isTokened = DB::table('user_verification')
+            ->where(['email' => $user->email])->first();
+            if($isTokened):
+                DB::table('user_verification')
+                ->where(['email' => $user->email])
+                ->update([
+                    'code' => $code, 
+                    'expiry_time' => $expiry_time
+                ]);
+            else:
+                DB::table('user_verification')
+                ->insert([
+                    'email' => $user->email, 
+                    'code' => $code, 
+                    'expiry_time' => $expiry_time
+                ]);
+            endif;
 
             Mail::to($user->email)
                 ->send(new VerifyAccountMail($user, $code));
@@ -243,7 +255,7 @@ class AuthService
         endif;
     }
 
-    public function password_reset(Request $request)
+    public function password_reset(PassReset $request)
     {   
         try{
             $user = User::where(['email' => $request->email])->first();

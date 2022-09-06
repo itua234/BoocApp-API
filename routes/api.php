@@ -63,8 +63,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     Route::group([
         'prefix' => 'wallet'
     ], function () {
-        Route::get("/getwallet", [WalletController::class, "getWallet"]);
-        Route::get("/checkuserbankdetails/", [WalletController::class, "checkUserBankDetails"]);
+        Route::get("/get-wallet", [WalletController::class, "getWallet"]);
+        Route::get("/get-bank-details/", [WalletController::class, "checkUserBankDetails"]);
         Route::post("/resolve", [WalletController::class, "resolveAccount"]);
         Route::post("/transfer", [WalletController::class, "transfer"]);
     });
