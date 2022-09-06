@@ -19,6 +19,7 @@ class CreateWalletsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->double('balance')->default(0.0000);
             $table->double('available_balance')->default(0.0000);
+            $table->double('referral_earnings')->default(0.0000);
             $table->timestamps();
         });
     }

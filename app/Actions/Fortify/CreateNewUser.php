@@ -36,20 +36,23 @@ class CreateNewUser implements CreatesNewUsers
 
                 if($input['user_type'] != "admin"):
 
-                    if($input['user_type'] == "chef"):
-                        $user->referralCode()->create([
-                            'code' => Helper::generateReferral($user->firstname),
-                        ]);
+                    $user->referralCode()->create([
+                        'code' => Helper::generateReferral($user->firstname),
+                        'type' =>  ($input['user_type'] == 'chef') ? 'chef' : 'user'
+                    ]);
 
-                        Wallet::create([
-                            'user_id' => $user->id
-                        ]);
-                    endif;
+                    Wallet::create([
+                        'user_id' => $user->id
+                    ]);
 
                     if(isset($input['referral_code'])):
-                        $code = ReferralCode::where('code', $input['referral_code'])->first();
+                        $code = ReferralCode::where([
+                            'code' => $input['referral_code'
+                        ]])->first();
                         if($code):
-                            $redeemRes = $code->redeem($user->id);
+                            if($code->type == $input['user_type']):
+                                $redeemRes = $code->redeem($user->id);
+                            endif;
                         endif;
                     endif;
 

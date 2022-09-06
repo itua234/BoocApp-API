@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReferralCodeUsage extends Model
 {
-    use HasFactory, BelongsToUser, SoftDeletes;
+    use HasFactory;
+    use BelongsToUser;
+    use SoftDeletes;
 
     protected $fillable = [
         'redeemer_id',
         'owner_id',
-        'redeemed_at'
     ];
 }

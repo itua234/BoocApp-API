@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('redeemer_id')->nullable();
             $table->foreign('redeemer_id')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamp('redeemed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

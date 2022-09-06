@@ -13,6 +13,8 @@ class Wallet extends Model
     protected $fillable = [
         'user_id',
         'balance',
+        'available_balance',
+        'referral_earnings',
     ];
 
     protected $hidden = [
