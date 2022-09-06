@@ -64,10 +64,10 @@ class CreateNewUser implements CreatesNewUsers
                         'expiry_time' => Carbon::now()->addMinutes(6)
                     ]);
 
-                    DB::table('newsletter')
+                    /*DB::table('newsletter')
                     ->insert([
                         'email' => $user->email
-                    ]);
+                    ]);*/
 
                     /*Mail::to($user->email)
                         ->send(new VerifyAccountMail($user, $code));*/
