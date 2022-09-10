@@ -4,8 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
-class UserResource extends JsonResource
+class ArtisanResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,6 +16,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        //return parent::toArray($request);
         return [
             'id' => $this->id,
             "firstname" => $this->firstname,
@@ -24,9 +26,11 @@ class UserResource extends JsonResource
             "longitude" => $this->longitude,
             "latitude" => $this->latitude,
             "wallet" => User::find($this->id)->wallet()->with('bankAccount')->first(),
-            //"profile" => new ProfileResource(User::find($this->id)->profile),
-            //"nok" => User::find($this->id)->nok,
-            //"posts" => new PostResource(User::find($this->id)->jobposts)
+            //"rating" => $this->rating,
+            //"town" => $this->town,
+            //"completed_jobs" => 28,
+            //"distance" => isset($this->distance) ? $this->distance : 0,
+            //"reviews" => User::find($this->user_id)->reviews
         ];
     }
 }

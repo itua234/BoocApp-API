@@ -9,11 +9,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laratrust\Traits\LaratrustUserTrait;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
     use LaratrustUserTrait;
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
 
     protected $fillable = [
         'firstname',
@@ -44,30 +48,37 @@ class User extends Authenticatable
 
     protected $dates = ['deleted_at'];
 
-    public function setPasswordAttribute($password)
+    protected function firstname(): Attribute
     {
-        $this->attributes['password'] = bcrypt($password);
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => ucwords(strtolower($value)),
+        );
     }
 
-    public function setEmailAttribute($email)
+    protected function lastname(): Attribute
     {
-        $this->attributes['email'] = strtolower($email);
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => ucwords(strtolower($value)),
+        );
     }
 
-    public function setFirstnameAttribute($firstname)
+    protected function email(): Attribute
     {
-        $this->attributes['firstname'] = ucwords(strtolower($firstname));
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => strtolower($value),
+        );
     }
 
-    public function setLastnameAttribute($lastname)
+    protected function password(): Attribute
     {
-        $this->attributes['lastname'] = ucwords(strtolower($lastname));
+        return Attribute::make(
+            get: fn ($value) => $value,
+            set: fn ($value) => bcrypt($value),
+        );
     }
-
-    /*public function getReferralCodeAttribute($lastname)
-    {
-        return $this->referralCode()->pluck('code')[0] ?? null;
-    }*/
 
     public function wallet(){
         return $this->hasOne(Wallet::class);
@@ -101,4 +112,9 @@ class User extends Authenticatable
     public function orders(){
         return $this->hasMany(Order::class);
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_user');
+    } 
 }

@@ -59,6 +59,9 @@ class UserRepository implements IUserInterface
             'firstname'   =>  "required|max:50",
             'lastname'     =>  "required|max:70",
             'phone'     =>  "required|numeric|min:11|unique:users,phone",
+            'address' => "",
+            'city' => "",
+            'state' => ""
         ]);
         if($validator->fails()):
             return response([
@@ -75,7 +78,20 @@ class UserRepository implements IUserInterface
             'phone' => $request->phone,
         ]);
 
+        $profile = $user->profile()->updateOrCreate([
+            'user_id' => $user->id
+        ],[
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state
+        ]);
+
         $message = "Profile updated Successfully";
         return CustomResponse::success($message, $data);
+    }
+
+    public function getChefsByServiceTypes(Request $request)
+    {
+        return auth()->user();
     }
 }

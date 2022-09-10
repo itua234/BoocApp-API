@@ -110,23 +110,14 @@ class AuthService
             $code = mt_rand(1000, 9999);
             $expiry_time = Carbon::now()->addMinutes(6);
 
-            $isTokened = DB::table('user_verification')
-            ->where(['email' => $user->email])->first();
-            if($isTokened):
-                DB::table('user_verification')
-                ->where(['email' => $user->email])
-                ->update([
+            DB::table('user_verification')
+            ->updateOrInsert(
+                ['email' => $user->email],
+                [
                     'code' => $code, 
                     'expiry_time' => $expiry_time
-                ]);
-            else:
-                DB::table('user_verification')
-                ->insert([
-                    'email' => $user->email, 
-                    'code' => $code, 
-                    'expiry_time' => $expiry_time
-                ]);
-            endif;
+                ]
+            );
 
             Mail::to($user->email)
                 ->send(new VerifyAccountMail($user, $code));

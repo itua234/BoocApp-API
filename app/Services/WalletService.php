@@ -27,14 +27,16 @@ class WalletService
             if($response['status'] == true):
                 $bank = $payment->getBank($request->bank_code);
                 
-                $account = $wallet->bankAccount()->create([
+                $account = $wallet->bankAccount()->updateOrCreate([
+                    'wallet_id' => $wallet->id
+                ],[
                     'bank_code' => $request->bank_code,
                     'bank_name' => $bank,
-                    'account_number' => Crypt::encryptString($response['data']["account_number"]),
-                    'account_name' => Crypt::encryptString($response['data']["account_name"])
+                    'account_number' => $response['data']["account_number"],
+                    'account_name' => $response['data']["account_name"]
                 ]);
                 
-                return CustomResponse::success($response['message'], new WalletResource($wallet));
+                return CustomResponse::success($response['message'], $account);
             else:
                 return CustomResponse::error($response['message'], 422);
             endif;
@@ -47,23 +49,8 @@ class WalletService
 
     public function getWallet()
     {
-        $wallet = auth()->user()->wallet;
+        $wallet = auth()->user()->wallet()->with('bankAccount')->first();
         try{
-            /*if($wallet->has_bank_details):
-                $wallet->account_name = Crypt::decryptString($wallet->account_name);
-                $wallet->account_number = Crypt::decryptString($wallet->account_number);
-            endif;
-           
-            $transactions = Wallet::find($wallet->id)->transactions()
-                ->orderBy('updated_at', 'DESC')
-                    ->get();
-            foreach($transactions as $array):
-                $array->amount = number_format($array->amount);
-                $array->updated = $array->updated_at->toFormattedDateString();
-                unset($array->updated_at);
-            endforeach;
-        
-            $wallet->transactions = $transactions;*/
             return CustomResponse::success('successful', $wallet);
         }catch(\Exception $e){
             $message = $e->getMessage();
@@ -93,9 +80,6 @@ class WalletService
             if(!$bank):
                 $message = "Account Details not found";
                 return CustomResponse::error($message, 404);
-            else:
-                $bank->account_name = Crypt::decryptString($bank->account_name);
-                $bank->account_number = Crypt::decryptString($bank->account_number);
             endif;
         }catch(\Exception $e){
             $message = $e->getMessage();

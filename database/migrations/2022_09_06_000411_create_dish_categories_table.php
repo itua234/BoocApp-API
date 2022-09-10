@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->string('date');
+            /*$table->string('date');
             $table->enum('time', ['morning', 'afternoon', 'evening']);
             $table->string('firstname');
             $table->string('lastname');
@@ -30,7 +30,7 @@ return new class extends Migration
 
             $table->string('menu');
             $table->string('dish_id');
-            $table->enum('gas_filled', ['yes', 'no']);
+            $table->enum('gas_filled', ['yes', 'no']);*/
         });
     }
 

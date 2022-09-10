@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Wallet extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory;
+    use BelongsToUser;
+
+    //protected $with = ['bankAccount'];
 
     protected $fillable = [
         'user_id',

@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, ProfileController,
+use Illuminate\Support\Facades\{Route, Auth, DB};
+use App\Http\Controllers\{AuthController, 
+    ProfileController,
     WalletController, UserController};
 
 Route::group(['prefix' => 'v1'], function () {
-    /*Route::post("/postJobCategory", [UserController::class, "postJobCategory"]);
-    Route::post("/create_chefs", [UserController::class, "createChef"]);*/
+    Route::post("/create-service-types", [UserController::class, "setServiceTypes"]);
+    Route::post("/create-dish-categories", [UserController::class, "setDishCategories"]);
+    Route::post("/create-roles", [UserController::class, "createRoles"]);
+
     Route::group([
         'prefix' => 'auth'
     ], function () {
@@ -24,12 +27,6 @@ Route::group(['prefix' => 'v1'], function () {
         'prefix' => 'wallet'
     ], function () {
         Route::get("/getbanks", [WalletController::class, "fetchBanks"]);
-    });
-
-    Route::group([
-        'prefix' => 'user'
-    ], function () {
-        Route::post("/create-roles", [UserController::class, "createRoles"]);
     });
 
     Route::group([
@@ -55,9 +52,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     Route::group([
         'prefix' => 'user'
     ], function () {
-        Route::post("/save-profile-details", [ProfileController::class, "saveProfileDetails"]);
-        Route::post("/save-client-profile-details", [ProfileController::class, "saveClientUserDetails"]);
-        Route::post("/save-profile-photo", [ProfileController::class, "saveProfilePhoto"]);
+        Route::post("/save-profile-details", [UserController::class, "saveProfileDetails"]);
+        Route::post("/save-profile-photo", [UserController::class, "saveProfilePhoto"]);
+        Route::delete("/delete", [UserController::class, "delete"]);
     });
 
     Route::group([
@@ -69,4 +66,19 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
         Route::post("/transfer", [WalletController::class, "transfer"]);
     });
 
+});
+
+
+Route::get("/malone", function(){
+    $lat2 = 29.46786;
+    $lon2 = -98.53506;
+    
+    $users = DB::table('users')
+    ->select(DB::raw('*, ST_Distance_Sphere(
+        point(longitude,latitude),
+        point('.$lon2.','.$lat2.')) / 1000 as distance'))
+    ->where('id', '<=', 3)
+    ->orderBy('distance', 'ASC')
+    ->get();
+    return $users;
 });

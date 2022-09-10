@@ -29,12 +29,9 @@ return new class extends Migration
             $table->string('cac_registration')->nullable();
             $table->string('restaurant_address', 255)->nullable();
 
-            $table->string('house_address', 255)->nullable();
-            $table->string('city') ->nullable();
-            $table->string('state') ->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
-            $table->enum('available', [0, 1])->default(1); // 0 - Offline, 1 - Online
+            $table->string('address', 255)->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
             $table->timestamps();
         });
     }
