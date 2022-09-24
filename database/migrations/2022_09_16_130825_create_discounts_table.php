@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('service_users', function (Blueprint $table) {
-            $table->unsignedBigInteger('service_id');
-            $table->foreign('service_id')->references('id')->on('services');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::create('discounts', function (Blueprint $table) {
+            $table->id();
+            $table->string('code')->unique();
+            $table->string('type')->nullable();
+            $table->integer('value')->nullable();
+            $table->integer('percent_off')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('service_users');
+        Schema::dropIfExists('discounts');
     }
 };

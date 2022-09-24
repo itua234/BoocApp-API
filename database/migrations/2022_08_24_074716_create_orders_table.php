@@ -23,8 +23,9 @@ return new class extends Migration
             $table->string('reference')->unique();
             $table->enum('payment_status', ['pending', 'success', 'failed'])->default('pending');
             $table->enum('order_status', ['pending', 'completed', 'cancelled', 'in progress'])->default('pending');
-            $table->enum('payment_channel', ['Flutterwave', 'Paystack', 'Manual']);
-            $table->enum('type', ['Home Service', 'Delivery Service']);
+            $table->enum('payment_channel', ['FLUTTERWAVE', 'PAYSTACK', 'MANUAL'])->nullable();
+            $table->enum('type', ['HOME SERVICE', 'DELIVERY SERVICE', 'OCCASION SERVICE']);
+            $table->string('discount_code')->nullable();
             $table->timestamps();
         });
     }

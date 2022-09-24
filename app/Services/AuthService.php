@@ -325,4 +325,5 @@ class AuthService
         $message = 'successful';
         return CustomResponse::success($message, $user, 201);
     }
+    
 }

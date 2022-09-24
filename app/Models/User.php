@@ -27,6 +27,9 @@ class User extends Authenticatable
         'password',
         'user_type',
         'is_verified',
+        'latitude',
+        'longitude',
+        'available',
         'fcm_token',
         'profile_photo_path'
     ];
@@ -113,8 +116,28 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function extras(){
+        if($this->user_type == 'chef'):
+            return $this->hasMany(DishExtra::class);
+        elseif($this->user_type == 'user'):
+            return null;
+        else:
+            return null;
+        endif;
+    }
+
+    public function dishes(){
+        if($this->user_type == 'chef'):
+            return $this->hasMany(Dish::class);
+        elseif($this->user_type == 'user'):
+            return null;
+        else:
+            return null;
+        endif;
+    }
+
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'service_user');
+        return $this->belongsToMany(Services::class, 'service_user', 'user_id', 'service_id');
     } 
 }

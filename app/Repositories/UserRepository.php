@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\{User, Role, UserProfile, ChefProfile};
+use App\Models\{User, Role, UserProfile, ChefProfile, Services};
 use App\Util\CustomResponse;
 use App\Services\FCMService;
 use App\Interfaces\IUserInterface;
@@ -55,43 +55,36 @@ class UserRepository implements IUserInterface
     
     public function saveProfileDetails(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'firstname'   =>  "required|max:50",
-            'lastname'     =>  "required|max:70",
-            'phone'     =>  "required|numeric|min:11|unique:users,phone",
-            'address' => "",
-            'city' => "",
-            'state' => ""
-        ]);
-        if($validator->fails()):
-            return response([
-                'message' => $validator->errors()->first(),
-                'error' => $validator->getMessageBag()->toArray()
-            ], 422);
-        endif;
-
         $user = auth()->user();
-        $data = User::where(['id' => $user->id])
-        ->update([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'phone' => $request->phone,
-        ]);
+        $user->firstname = $request['user']["firstname"];
+        $user->lastname = $request['user']["lastname"];
+        $user->phone = $request['user']["phone"];
+        $user->save();
 
         $profile = $user->profile()->updateOrCreate([
             'user_id' => $user->id
         ],[
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state
+            'address' => $request['profile']["address"],
+            'city' => $request['profile']["city"],
+            'state' => $request['profile']["state"]
         ]);
 
+        $data = User::with('profile')->where('id', $user->id)->first();
         $message = "Profile updated Successfully";
         return CustomResponse::success($message, $data);
     }
 
-    public function getChefsByServiceTypes(Request $request)
+    public function getChefsByServiceTypes(Request $request, $Id)
     {
-        return auth()->user();
+        $lists = DB::table('service_user')
+        ->where('service_id', $Id)->get(); 
+        return $lists;
+    }
+
+    public function getChefDetails($Id)
+    {
+        $chef = User::with('wallet')
+        ->where(['id' => $Id])->first();
+        return $chef;
     }
 }

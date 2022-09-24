@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Util\{CustomResponse, Paystack, Flutterwave};
 use App\Models\{Transaction, Wallet, User, BankAccount};
 use App\Http\Requests\{ResolveAccount};
-use App\Http\Resources\{BankResource, WalletResource};
+use App\Http\Resources\{BankResource};
 use Illuminate\Support\Facades\{DB, Http, Crypt, Hash, Mail};
 
 class WalletService

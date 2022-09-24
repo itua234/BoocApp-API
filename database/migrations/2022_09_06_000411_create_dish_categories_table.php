@@ -15,22 +15,14 @@ return new class extends Migration
     {
         Schema::create('dish_categories', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
+            //$table->string('name')->unique();
+            $table->string('slug')->unique()->nullable();
+            $table->enum('type', ['admin', 'chef'])->default('admin');
             $table->string('description')->nullable();
             $table->timestamps();
-
-            /*$table->string('date');
-            $table->enum('time', ['morning', 'afternoon', 'evening']);
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('phone');
-            $table->string('address', 255);
-            $table->text('note');
-            $table->string('discount_code');
-
-            $table->string('menu');
-            $table->string('dish_id');
-            $table->enum('gas_filled', ['yes', 'no']);*/
         });
     }
 

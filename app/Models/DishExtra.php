@@ -9,7 +9,21 @@ class DishExtra extends Model
 {
     use HasFactory;
 
-    public function dish(){
-        return $this->belongsTo(Dish::class);
+    protected $fillable = [
+        'chef_id',
+        'name',
+        'measurement',
+        'price',
+        'profit',
+        'description'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function chef(){
+        return $this->belongsTo(User::class);
     }
 }

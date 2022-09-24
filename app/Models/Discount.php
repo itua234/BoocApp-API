@@ -2,25 +2,22 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserProfile extends Model
+class Discount extends Model
 {
     use HasFactory;
-    use BelongsToUser;
 
     protected $fillable = [
-        'user_id',
-        'city',
-        'state',
-        'address'
+        'code',
+        'type',
+        'value',
+        'percent_off',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
-    
 }

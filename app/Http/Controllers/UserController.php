@@ -20,17 +20,8 @@ class UserController extends Controller
         $this->userInterface = $userInterface;
     }
 
-    public function setDishCategories(Request $request){
-        foreach($request->category as $category){
-            DB::table('dish_categories')
-            ->insert([
-                "name" => $category
-            ]);
-        }
-        return response()->json(['success'=> true]);
-    }
-
-    public function setServiceTypes(Request $request){
+    public function setServiceTypes(Request $request)
+    {
         foreach($request->service as $service){
             DB::table('services')
             ->insert([
@@ -42,7 +33,8 @@ class UserController extends Controller
         return response()->json(['success'=> true]);
     }
 
-    public function createRoles(Request $request){
+    public function createRoles(Request $request)
+    {
         foreach($request->roles as $role){
             DB::table('roles')
             ->insert([
@@ -59,10 +51,14 @@ class UserController extends Controller
         return $this->userInterface->delete($request);
     }
 
-    public function getChefsByServiceTypes(Request $request)
+    public function getChefsByServiceTypes(Request $request, $Id)
     {
-        return $this->userInterface->getChefsByServiceTypes($request);
+        return $this->userInterface->getChefsByServiceTypes($request, $Id);
     }
 
+    public function getChefDetails($Id)
+    {
+        return $this->userInterface->getChefDetails($Id);
+    }
     
 }

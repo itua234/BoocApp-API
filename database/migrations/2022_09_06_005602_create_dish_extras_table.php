@@ -15,14 +15,15 @@ return new class extends Migration
     {
         Schema::create('dish_extras', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dish_id');
-            $table->foreign('dish_id')->references('id')->on('dishes')->onDelete('cascade');
+            //$table->unsignedBigInteger('dish_id');
+            //$table->foreign('dish_id')->references('id')->on('dishes')->onDelete('cascade');
+            $table->unsignedBigInteger('chef_id');
+            $table->foreign('chef_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
-            //$table->string('description');
-            //$table->string('image');
             $table->string('measurement');
+            $table->string('description')->nullable();
             $table->string('price');
-            $table->string('profits');
+            $table->string('profit');
             $table->timestamps();
         });
     }

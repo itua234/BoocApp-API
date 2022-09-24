@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('delivery_service_order_details', function (Blueprint $table) {
+        Schema::create('home_service_details', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
-            $table->unsignedBigInteger('dish_id');
-            $table->foreign('dish_id')->references('id')->on('dishes')->onDelete('cascade');
-            $table->unsignedBigInteger('extra_id');
-            $table->foreign('extra_id')->references('id')->on('dish_extras')->onDelete('cascade');
-            $table->unsignedBigInteger('price');
-            $table->unsignedBigInteger('quantity');
+            $table->string('date')->nullable();
+            $table->enum('period', ['morning', 'afternoon', 'evening'])->nullable();
+            $table->string('firstname')->nullable();
+            $table->string('lastname')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('address', 255)->nullable();
+            $table->enum('filled_gas', ['yes', 'no']);
+            $table->integer('burners');
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('delivery_service_order_details');
+        Schema::dropIfExists('home_service_details');
     }
 };

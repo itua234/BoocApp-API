@@ -3,6 +3,7 @@
 namespace App\Util;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
 
 class Flutterwave
 {
@@ -12,16 +13,34 @@ class Flutterwave
 
     public function __construct()
     {
-        $this->secretKey = env('FLW_SECRET', '');
+        $this->secretKey = env('FLW_SECRET_KEY', '');
         $this->baseUrl = 'https://api.flutterwave.com/v3/';
         $this->secretHash = env('FLW_SECRET_HASH', '');
     }
 
-    public function initializePayment(array $data)
+    public function initializePayment(User $user, array $data)
     {
+        $redirect_url = url("/api/v1/wallet/callback/");
         $response = Http::acceptJson()
             ->withToken($this->secretKey)
-                ->post($this->baseUrl."payments/", $data);
+                ->post($this->baseUrl."payments/", [
+                    'tx_ref' => $data['tx_ref'],
+                    'amount' => $data['amount'],
+                    'currency' => 'NGN',
+                    'redirect_url' => $redirect_url,
+                    'customer' => [
+                        'email' => $user->email,
+                        'name' => $user->firstname.' '.$user->lastname
+                    ],
+                    'meta' => [
+                        'user_id' => $user->id
+                    ],
+                    'customizations' => [
+                        'title' => 'Pied Piper Payments',
+                        'logo' => 'https://',
+                        'description' => ''
+                    ]
+                ]);
         return $response;
     }
 
@@ -30,7 +49,7 @@ class Flutterwave
         if($transactionPrefix):
             return $transactionPrefix . '_' .uniqid(time());
         endif;
-        return 'flw' . uniqid(time());
+        return 'mks' . uniqid(time());
     }
 
     public function verifyWebhook()

@@ -2,21 +2,22 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DishCategory extends Model
+class HomeServiceDetail extends Model
 {
     use HasFactory;
-    use BelongsToUser;
 
     protected $fillable = [
-        'name',
-        'user_id',
-        'slug',
-        'description',
-        'type'
+        'order_id',
+        'date',
+        'period',
+        'firstname',
+        'lastname',
+        'phone',
+        'address',
+        'note',
     ];
 
     protected $hidden = [
@@ -24,7 +25,7 @@ class DishCategory extends Model
         'updated_at',
     ];
 
-    public function dishes(){
-        return $this->hasMany(Dish::class);
+    public function order(){
+        return $this->belongsTo(Order::class);
     }
 }

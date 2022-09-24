@@ -36,7 +36,7 @@ class Transaction extends Model
     protected function updatedAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value->toFormattedDateString()
+            get: fn ($value) => Carbon::parse($value)->toFormattedDateString()
         );
     }
 

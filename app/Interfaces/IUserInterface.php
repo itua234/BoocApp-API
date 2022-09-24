@@ -27,7 +27,9 @@ interface IUserInterface
 
     public function saveProfileDetails(Request $request);
 
-    public function getChefsByServiceTypes(Request $request);
+    public function getChefsByServiceTypes(Request $request, $Id);
+
+    public function getChefDetails($Id);
 
     /*public function getUserData();
 

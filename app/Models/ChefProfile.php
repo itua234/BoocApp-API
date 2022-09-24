@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChefProfile extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory;
+    use BelongsToUser;
 
     protected $fillable = [
         'user_id',
@@ -17,8 +18,6 @@ class ChefProfile extends Model
         'driving_license',
         'driving_license_number',
         'residential_address',
-        'latitude',
-        'longitude',
         'available',
         'status',
     ];

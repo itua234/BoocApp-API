@@ -35,17 +35,25 @@ class Paystack
     }
 
     public function initiateDeposit(
-        $email, $amount,
-        $channel, $callback
+        $email, $amount, $reference
     )
     {
+        $callback = url("/api/v1/wallet/callback/");
         $response = Http::acceptJson()
             ->withToken($this->secretKey)
                 ->post($this->baseUrl."transaction/initialize", [
                     'email' => $email,
-                    'amount' => $amount,
+                    'amount' => $amount * 100,
+                    'reference' => $reference,
                     'callback_url' => $callback,
-                    'channels' => [$channel],
+                    'channels' => [
+                        'card', 
+                        'bank', 
+                        'ussd', 
+                        'qr', 
+                        'mobile_money',
+                        'bank_transfer'
+                    ]
                 ]);
         return $response;
     }
@@ -103,19 +111,6 @@ class Paystack
             global $bank;
         endforeach;
         return $bank;
-    }
-
-    public function generateReference($id)
-    {
-        $token = "";
-        $codeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $codeAlphabet .= 'abcdefghijklmnopqrstuvwxyz';
-        $codeAlphabet .= '0123456789';
-        $max = strlen($codeAlphabet) - 1;
-        for($i=0; $i<14; $i++):
-            $token .= $codeAlphabet[mt_rand(0, $max)]; 
-        endfor; 
-        return $id.strtolower($token);
     }
 
     public function fetchAllTransfers()

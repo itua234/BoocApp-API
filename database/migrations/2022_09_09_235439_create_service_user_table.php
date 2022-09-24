@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('home_service_order_details', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('service_user', function (Blueprint $table) {
+            $table->unsignedBigInteger('service_id');
+            $table->foreign('service_id')->references('id')->on('services');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('home_service_order_details');
+        Schema::dropIfExists('service_user');
     }
 };

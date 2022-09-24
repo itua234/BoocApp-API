@@ -51,4 +51,17 @@ class Helper
 
         return $d / 1000;
     }
+
+    public static function generateReference($id)
+    {
+        $token = "";
+        $codeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codeAlphabet .= 'abcdefghijklmnopqrstuvwxyz';
+        $codeAlphabet .= '0123456789';
+        $max = strlen($codeAlphabet) - 1;
+        for($i=0; $i<14; $i++):
+            $token .= $codeAlphabet[mt_rand(0, $max)]; 
+        endfor; 
+        return $id.strtolower($token);
+    }
 }

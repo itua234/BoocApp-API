@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReferralCode extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory;
+    use BelongsToUser;
 
     protected $fillable = [
         'user_id',
         'code',
         'type'
     ];
-
 
     public function redeem($userID)
     {
