@@ -2,27 +2,24 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserProfile extends Model
+class Service extends Model
 {
     use HasFactory;
-    use BelongsToUser;
 
     protected $fillable = [
-        'user_id',
-        'city',
-        'state',
-        'address',
-        'nearest_landmark',
-        'video_verification_url'
+        'service_type',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
-    
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'service_users', 'user_id', 'service_id');
+    } 
 }

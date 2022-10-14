@@ -11,7 +11,7 @@ class Wallet extends Model
     use HasFactory;
     use BelongsToUser;
 
-    //protected $with = ['bankAccount'];
+    protected $with = ['bankAccount'];
 
     protected $fillable = [
         'user_id',
@@ -25,11 +25,13 @@ class Wallet extends Model
         'updated_at',
     ];
 
-    public function transactions(){
-        return $this->hasMany(Transaction::class);
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class)->orderBy('updated_at', 'DESC');
     }
 
-    public function bankAccount(){
+    public function bankAccount()
+    {
         return $this->hasOne(BankAccount::class);
     }
 }

@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\DishService;
+use App\Http\Requests\{
+    CreateDish, 
+    CreateExtra
+};
 
 class DishController extends Controller
 {
@@ -29,9 +33,9 @@ class DishController extends Controller
         return $this->dishService->getCategories($chefId);
     }
 
-    public function getDishes($categoryId, $chefId)
+    public function getDishes($chefId, $categoryId)
     {
-        return $this->dishService->getDishes($categoryId, $chefId);
+        return $this->dishService->getDishes($chefId, $categoryId);
     }
 
     public function getExtras($chefId)
@@ -39,12 +43,12 @@ class DishController extends Controller
         return $this->dishService->getExtras($chefId);
     }
 
-    public function addExtra(Request $request)
+    public function addExtra(CreateExtra $request)
     {
         return $this->dishService->addExtra($request);
     }
 
-    public function addDish(Request $request)
+    public function addDish(CreateDish $request)
     {
         return $this->dishService->addDish($request);
     }

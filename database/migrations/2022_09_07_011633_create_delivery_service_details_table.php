@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->string('date')->nullable();
-            $table->enum('period', ['morning', 'afternoon', 'evening'])->nullable();
-            $table->string('firstname')->nullable();
-            $table->string('lastname')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('address', 255)->nullable();
+            $table->enum('period', ['Morning', 'Noon', 'Evening']);
+            $table->string('firstname');
+            $table->string('lastname');
+            $table->string('phone');
+            $table->string('address', 255);
             $table->text('note')->nullable();
             $table->timestamps();
         });

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('name');
+            $table->string('name')->unique();
             //$table->string('name')->unique();
-            $table->string('slug')->unique()->nullable();
+            //$table->string('slug')->unique();
             $table->enum('type', ['admin', 'chef'])->default('admin');
             $table->string('description')->nullable();
             $table->timestamps();

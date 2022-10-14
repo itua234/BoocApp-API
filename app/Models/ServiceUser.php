@@ -2,27 +2,22 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserProfile extends Model
+class ServiceUser extends Model
 {
     use HasFactory;
-    use BelongsToUser;
+
+    protected $table = 'service_users';
 
     protected $fillable = [
         'user_id',
-        'city',
-        'state',
-        'address',
-        'nearest_landmark',
-        'video_verification_url'
+        'service_id'
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
-    
 }

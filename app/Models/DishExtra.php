@@ -23,7 +23,8 @@ class DishExtra extends Model
         'updated_at',
     ];
 
-    public function chef(){
-        return $this->belongsTo(User::class);
+    public function chef()
+    {
+        return $this->belongsTo(User::class, 'chef_id');
     }
 }

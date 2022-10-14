@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Order;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,26 +11,26 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class sendMessage implements ShouldBroadcast
+class InvoiceSent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
-    //public $user;
-    public $message;
-
-    public function __construct($message)
+    public $order;
+   
+    public function __construct(Order $order)
     {
-        //$this->user = $user;
-        $this->message = $message;
+        $this->order = $order;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('message.{$userId}');
+        return new PrivateChannel('invoice.'.$this->order->id);
     }
 
-    public function broadcastAs(){
-        return 'send-message';
+    public function broadcastAs()
+    {
+        return 'invoice.sent';
     }
-
 }

@@ -24,7 +24,8 @@ class DishCategory extends Model
         'updated_at',
     ];
 
-    public function dishes(){
-        return $this->hasMany(Dish::class);
+    public function dishes()
+    {
+        return $this->hasMany(Dish::class, 'category_id');
     }
 }

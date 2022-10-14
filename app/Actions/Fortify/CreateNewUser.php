@@ -5,10 +5,17 @@ namespace App\Actions\Fortify;
 use Carbon\Carbon;
 use App\Util\Helper;
 use App\Mail\VerifyAccountMail;
-use App\Models\{User, Wallet, Role, UserProfile, ChefProfile, ReferralCode};
+use App\Models\{
+    User, 
+    ReferralCode,
+    UserProfile
+};
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Illuminate\Support\Facades\{DB, Mail};
+use Illuminate\Support\Facades\{
+    DB, 
+    Mail
+};
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -30,19 +37,27 @@ class CreateNewUser implements CreatesNewUsers
                 'phone' => $input['phone'],
                 'password' => $input['password'],
                 'user_type' => $input['user_type'],
+                'gender' => isset($input['gender']) ? $input['gender'] : NULL,
                 'is_verified' => ($input['user_type'] == 'chef') ? '0' : '1'
             ]), function (User $user) use ($input) {
                 $user->attachRole($input['user_type']);
 
                 if($input['user_type'] != "admin"):
+                    if($input['user_type'] == "chef")
+                        ChefProfile::create([
+                            'user_id' => $user->id
+                        ]);
+                    else if($input['user_type'] == "user"):
+                        UserProfile::create([
+                            'user_id' => $user->id
+                        ]);
+                    endif;
+
+                    $user->wallet()->create([]);
 
                     $user->referralCode()->create([
                         'code' => Helper::generateReferral($user->firstname),
                         'type' =>  ($input['user_type'] == 'chef') ? 'chef' : 'user'
-                    ]);
-
-                    Wallet::create([
-                        'user_id' => $user->id
                     ]);
 
                     if(isset($input['referral_code'])):

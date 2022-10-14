@@ -18,8 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('address', 255)->nullable();
-            $table->string('city') ->nullable();
-            $table->string('state') ->nullable();
+            $table->string('city')->nullable();
+            $table->string('nearest_landmark')->nullable();
+            $table->string('state')->nullable();
+            $table->string('video_verification_url')->nullable();
             $table->timestamps();
         });
     }

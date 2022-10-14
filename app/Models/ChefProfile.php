@@ -13,18 +13,28 @@ class ChefProfile extends Model
 
     protected $fillable = [
         'user_id',
-        'nin',
-        'bvn',
-        'driving_license',
-        'driving_license_number',
-        'residential_address',
-        'available',
+        'city',
+        'state',
+        'address',
+        'nearest_landmark',
         'status',
+        'rating',
+
+        'id_card_url',
+        'video_url',
+
+        'is_certified',
+        'certificate_url',
+
+        'is_restaurant',
+        'cac_reg_number',
+        'restaurant_name',
+        'restaurant_address'
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
-        'deleted_at',
     ];
+
 }

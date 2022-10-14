@@ -1,15 +1,21 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Route, Auth, DB};
-use App\Http\Controllers\{AuthController, 
-    ProfileController, DishController,
-    WalletController, UserController, OrderController
+use Illuminate\Support\Facades\{
+    Route, 
+    Auth, 
+    DB
+};
+use App\Http\Controllers\{
+    AuthController, 
+    UserController,
+    WalletController, 
+    DishController, 
+    OrderController
 };
 
 Route::group(['prefix' => 'v1'], function () {
     Route::post("/create-service-types", [UserController::class, "setServiceTypes"]);
-    Route::post("/create-roles", [UserController::class, "createRoles"]);
 
     Route::group([
         'prefix' => 'auth'
@@ -17,23 +23,27 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post("/register", [AuthController::class, "register"]);
         Route::post("/login", [AuthController::class, "login"]);
         Route::post("/google/login", [AuthController::class, "requestTokenGoogle"]);
-        Route::post("/sendcode/{email}", [AuthController::class, "sendcode"]);
-        Route::post("/email/verify/", [AuthController::class, "verifyUser"]);
+        Route::post("/resend-code/{email}", [AuthController::class, "sendcode"]);
+        Route::post("/email/verify/{email}/{code}", [AuthController::class, "verifyEmail"]);
         Route::post("/password/reset", [AuthController::class, "resetPassword"]);
-        Route::post("/reset-password", [AuthController::class, "password_reset"]);
+        Route::post("/reset-password", [AuthController::class, "passwordReset"]);
     });
 
+    Route::get("/banks", [WalletController::class, "fetchBanks"]);
+
     Route::group([
-        //'prefix' => 'wallet'
+        'prefix' => 'callback'
     ], function () {
-        Route::get("/getbanks", [WalletController::class, "fetchBanks"]);
+        //Route::post("/paystack/", [UserController::class, "transferWebhook"]);
+        //Route::post("/flutterwave/", [UserController::class, "transferWebhook"]);
     });
 
     Route::group([
-        //'prefix' => 'wallet',
+        'prefix' => 'payout',
         'middleware' => ['verify.paystack']
     ], function () {
-        Route::post("/transfer/webhook", [WalletController::class, "transferWebhook"]);
+        //Route::post("/transfer/webhook", [UserController::class, "transferWebhook"]);
+        //Route::post("/transfer/webhook", [UserController::class, "transferWebhook"]);
     });
 });
 
@@ -45,47 +55,56 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     ], function () {
         Route::get("/logout", [AuthController::class, "logout"]);
         Route::post("/refresh", [AuthController::class, "refresh"]);
-        Route::post("/change-password", [AuthController::class, "change_password"]);
-        Route::post("/save-fcm-token", [AuthController::class, "saveFCMToken"]);
+        Route::post("/change-password", [AuthController::class, "changePassword"]);
     });
     
     Route::group([
         'prefix' => 'user'
     ], function () {
-        Route::post("/save-profile-details", [UserController::class, "saveProfileDetails"]);
-        Route::post("/save-profile-photo", [UserController::class, "saveProfilePhoto"]);
+        Route::get("/{userId}", [UserController::class, "getUserData"]);
+        Route::post("/profile", [UserController::class, "updateProfileData"]);
+        Route::post("/profile/photo", [UserController::class, "updateProfilePhoto"]);
         Route::delete("/delete", [UserController::class, "delete"]);
+        Route::post("/fcm-token", [UserController::class, "storeFcmToken"]);
+        Route::post("/newsletter", [UserController::class, "newsletter"]);
+        Route::post("/send-push-notification", [UserController::class, "sendPushNotification"]);
+        Route::post("/update-address-info/", [UserController::class, "updateAddressInfo"]);
+        Route::post("/update-chef-info/", [UserController::class, "chefVerification"]);
     });
 
     Route::get("/get-chefs/{Id}", [UserController::class, "getChefsByServiceTypes"]);
-    Route::get("/chef/{Id}", [UserController::class, "getChefDetails"]);
+    //Route::get("/chef/{Id}", [UserController::class, "getChefDetails"]);
     //Route::get("/user/{$Id}", [UserController::class, "getUserDetails"]);
 
     Route::group([
         'prefix' => 'wallet'
     ], function () {
-        Route::get("/get-wallet", [WalletController::class, "getWallet"]);
-        Route::get("/get-bank-details/", [WalletController::class, "checkUserBankDetails"]);
+        Route::get("/", [WalletController::class, "getWallet"]);
+        Route::get("/bank-detail/", [UserController::class, "getBankDetails"]);
         Route::post("/resolve", [WalletController::class, "resolveAccount"]);
         Route::post("/transfer", [WalletController::class, "transfer"]);
     });
 
     Route::group([
-        'prefix' => 'dish'
+        'prefix' => ''
     ], function () {
-        Route::get("/get-categories/{chefId}/", [DishController::class, "getCategories"]);
-        Route::get("/get-dishes/{categoryId}/{chefId}/", [DishController::class, "getDishes"]);
-        Route::get("/get-extras/{chefId}/", [DishController::class, "getExtras"]);
-
-        Route::post("/create/category", [DishController::class, "createDishCategory"]);
+        Route::post("dish/", [DishController::class, "addDish"]);
+        Route::post("extra/", [DishController::class, "addExtra"]);
         Route::post("/create/dish-extra", [DishController::class, "addDishAndExtra"]);
-        Route::post("/create/dish", [DishController::class, "addDish"]);
-        Route::post("/create/extra", [DishController::class, "addExtra"]);
+
+        Route::post("/category/", [DishController::class, "createDishCategory"]);
+        Route::get("{chefId}/categories/", [DishController::class, "getCategories"]);
+        Route::get("/{chefId}/{categoryId}/dishes", [DishController::class, "getDishes"]);
+        Route::get("/{chefId}/extras/", [DishController::class, "getExtras"]);
     });
 
-    Route::post("/order", [OrderController::class, "order"]);
+    Route::group([
+        'prefix' => 'order'
+    ], function () {
+        Route::get("/{id}", [OrderController::class, "show"]);
+        Route::post("/", [OrderController::class, "order"]);
+    });
 });
-
 
 Route::get("/malone", function(){
     $lat2 = 29.46786;

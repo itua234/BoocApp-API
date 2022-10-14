@@ -19,13 +19,14 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->string('phone')->unique();
+            $table->enum('gender', ['Male', 'Female'])->nullable();
+            $table->string('password');
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->string('fcm_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
             $table->enum('user_type', ['chef', 'user', 'admin']);
-            $table->string('profile_photo_path')->nullable();
+            $table->string('photo')->nullable();
             $table->enum('is_verified', ['0', '1', '2'])->default('0'); // 0 - Pending, 1 - Active, 2 - Suspended
             $table->enum('available', [0, 1])->default(1); // 0 - Offline, 1 - Online
             $table->rememberToken();

@@ -6,9 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Util\CustomResponse;
 use App\Http\Resources\UserResource;
-use App\Http\Requests\{LoginRequest};
-use Illuminate\Support\Facades\{DB, Http};
-use App\Models\{User, Dish, DishExtra, DishCategory};
+use App\Http\Requests\{
+    CreateDish, 
+    CreateExtra
+};
+use Illuminate\Support\Facades\{
+    DB, 
+    Http
+};
+use App\Models\{
+    User, 
+    Dish, 
+    DishExtra, 
+    DishCategory
+};
 
 class DishService
 {   
@@ -28,6 +39,11 @@ class DishService
         if($request['extra']):
             $extra = $this->createExtra($request['extra'], $user);
         endif;
+
+        $data = [
+            'dish' => $dish,
+            'extra' => isset($extra) ? $extra : NULL
+        ];
 
         $message = "Dish/Extra has been created successfully";
         return CustomResponse::success($message, $dish);
@@ -50,8 +66,8 @@ class DishService
     public function getCategories($chefId)
     {
         $user = auth()->user();
-        $categories = DishCategory::where([
-            'user_id' => $chefId
+        $categories = DishCategory::with('dishes')->where([
+            'user_id' => (int) $chefId
         ])->orWhere([
             'type' => 'admin'
         ])->get();
@@ -59,12 +75,11 @@ class DishService
         return CustomResponse::success($message, $categories);
     }
 
-    public function getDishes($categoryId, $chefId)
+    public function getDishes($chefId, $categoryId)
     {
-        //$user = auth()->user();
         $dishes = Dish::where([
-            'chef_id' => $chefId,
-            'category_id' => $categoryId
+            'chef_id' => (int) $chefId,
+            'category_id' => (int) $categoryId
         ])->get();
         $message = "Dishes:";
         return CustomResponse::success($message, $dishes);
@@ -72,9 +87,8 @@ class DishService
 
     public function getExtras($chefId)
     {
-        //$user = auth()->user();
         $extras = DishExtra::where([
-            'chef_id' => $chefId
+            'chef_id' => (int) $chefId
         ])->get();
         $message = "Extras:";
         return CustomResponse::success($message, $extras);
@@ -110,7 +124,7 @@ class DishService
         return $extra;
     }
 
-    public function addExtra(Request $request)
+    public function addExtra(CreateExtra $request)
     {
         $user = auth()->user();
         $data = [
@@ -126,7 +140,7 @@ class DishService
         return CustomResponse::success($message, $extra);
     }
 
-    public function addDish(Request $request)
+    public function addDish(CreateDish $request)
     {
         $user = auth()->user();
 

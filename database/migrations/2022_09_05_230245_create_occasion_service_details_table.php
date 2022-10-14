@@ -20,13 +20,13 @@ return new class extends Migration
             $table->string('occasion_type');
             $table->integer('expected_guests');
             $table->string('date');
-            $table->enum('period', ['morning', 'afternoon', 'evening']);
-            $table->string('firstname')->nullable();
-            $table->string('lastname')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('address', 255)->nullable();
+            $table->enum('period', ['Morning', 'Noon', 'Evening']);
+            $table->string('firstname');
+            $table->string('lastname');
+            $table->string('phone');
+            $table->string('address', 255);
             $table->text('note')->nullable();
-            $table->string('budget');
+            $table->double('budget');
             $table->timestamps();
         });
     }

@@ -4,11 +4,30 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Util\{CustomResponse, Paystack, Flutterwave};
-use App\Models\{Transaction, Wallet, User, BankAccount};
-use App\Http\Requests\{ResolveAccount};
-use App\Http\Resources\{BankResource};
-use Illuminate\Support\Facades\{DB, Http, Crypt, Hash, Mail};
+use App\Util\{
+    CustomResponse, 
+    Paystack, 
+    Flutterwave
+};
+use App\Models\{
+    Transaction, 
+    Wallet, 
+    User, 
+    BankAccount
+};
+use App\Http\Requests\{
+    ResolveAccount
+};
+use App\Http\Resources\{
+    BankResource
+};
+use Illuminate\Support\Facades\{
+    DB, 
+    Http, 
+    Crypt, 
+    Hash, 
+    Mail
+};
 
 class WalletService
 {
@@ -19,18 +38,18 @@ class WalletService
             $payment = new Paystack;
             $response = $payment->resolve(
                 [
-                    'account_number' => $request->account_number,
-                    'bank_code' => $request->bank_code
+                    'account_number' => $request['account_number'],
+                    'bank_code' => $request['bank_code']
                 ]
             );
             
             if($response['status'] == true):
-                $bank = $payment->getBank($request->bank_code);
+                $bank = $payment->getBank($request['bank_code']);
                 
                 $account = $wallet->bankAccount()->updateOrCreate([
                     'wallet_id' => $wallet->id
                 ],[
-                    'bank_code' => $request->bank_code,
+                    'bank_code' => $request['bank_code'],
                     'bank_name' => $bank,
                     'account_number' => $response['data']["account_number"],
                     'account_name' => $response['data']["account_name"]

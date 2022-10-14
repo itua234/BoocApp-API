@@ -6,12 +6,35 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Util\CustomResponse;
 use App\Http\Resources\UserResource;
-use App\Http\Requests\{LoginRequest, VerifyAccount, 
-    ResetPassword, ChangePassword, CreateUser, PasswordReset as PassReset};
-use App\Mail\{VerifyAccountMail, ForgetPasswordMail};
-use Illuminate\Support\Facades\{DB, Mail, Hash, Http, Socialite};
-use App\Actions\Fortify\{CreateNewUser, ResetUserPassword};
-use App\Models\{User, Wallet, Role, UserProfile, ChefProfile, PasswordReset};
+use App\Http\Requests\{
+    LoginRequest, 
+    VerifyAccount, 
+    ResetPassword, 
+    ChangePassword, 
+    CreateUser, 
+    PasswordReset as PassReset
+};
+use App\Mail\{
+    VerifyAccountMail, 
+    ForgetPasswordMail
+};
+use Illuminate\Support\Facades\{
+    DB, 
+    Mail, 
+    Hash, 
+    Http, 
+    Socialite
+};
+use App\Actions\Fortify\{
+    CreateNewUser, 
+    ResetUserPassword
+};
+use App\Models\{
+    User, 
+    Wallet, 
+    Role, 
+    PasswordReset
+};
 
 
 class AuthService
@@ -19,19 +42,19 @@ class AuthService
     public function login(LoginRequest $request)
     {
         try{
-            $user = User::where("email", $request->email)->first();
-            if(!$user || !password_verify($request->password, $user->password)):
+            $user = User::where("email", $request['email'])->first();
+            if(!$user || !password_verify($request['password'], $user->password)):
                 $message = "Wrong credentials";
                 return CustomResponse::error($message, 400);
             elseif(!$user->email_verified_at):
                 $message = "Email address not verified, please verify your email before you can login";
                 return CustomResponse::error($message, 401);
-            elseif(!$user->hasRole($request->user_type)):
+            elseif(!$user->hasRole($request['user_type'])):
                 $message = "You are not permitted";
                 return CustomResponse::error($message, 401);
             endif;
             
-            $token = $user->createToken("ChefAnywhere")->plainTextToken;
+            $token = $user->createToken("Booc")->plainTextToken;
             $user->token = $token;
             $message = 'Login successfully';
             return CustomResponse::success($message, $user);
@@ -47,7 +70,7 @@ class AuthService
             $createUser = new CreateNewUser;
             $user = $createUser->create($request->input());
 
-            $token = $user->createToken("ChefAnywhere")->plainTextToken;
+            $token = $user->createToken("Booc")->plainTextToken;
             $user->token = $token;
         }catch(\Exception $e){
             $message = $e->getMessage();
@@ -75,7 +98,7 @@ class AuthService
             'phone' => NULL
         ]);
 
-        $token = $userFromDb->createToken("ChefAnywhere")->plainTextToken;
+        $token = $userFromDb->createToken("Booc")->plainTextToken;
         $userFromDb->token = $token;
         $message = 'Google Login successful';
         return CustomResponse::success($message, $userFromDb);
@@ -98,7 +121,7 @@ class AuthService
             $token->delete();
         });
 
-        $token = $user->createToken("workpro")->plainTextToken;
+        $token = $user->createToken("Booc")->plainTextToken;
 
         return CustomResponse::success("token refreshed successfully", $token);
     }
@@ -108,14 +131,13 @@ class AuthService
         try{
             $user = User::where(['email' => $email])->first();
             $code = mt_rand(1000, 9999);
-            $expiry_time = Carbon::now()->addMinutes(6);
 
             DB::table('user_verification')
             ->updateOrInsert(
                 ['email' => $user->email],
                 [
                     'code' => $code, 
-                    'expiry_time' => $expiry_time
+                    'expiry_time' => Carbon::now()->addMinutes(6)
                 ]
             );
 
@@ -129,12 +151,12 @@ class AuthService
         return CustomResponse::success($message, null);
     }
 
-    public function verifyUser(VerifyAccount $request)
+    public function verifyEmail(VerifyAccount $request)
     {
         $check = DB::table('user_verification')
         ->where([
-            'email' => $request->email, 
-            'code' => $request->code
+            'email' => $request['email'], 
+            'code' => $request['code']
         ])->first();
         $current_time = Carbon::now();
         try{
@@ -143,14 +165,12 @@ class AuthService
                     if($check->expiry_time < $current_time):
                         $message = 'Verification code is expired';
                     else:
-                        $user = User::where('email', $check->email)->first();
-                        User::where('id', $user->id)
-                        ->update([
-                            'email_verified_at' => $current_time
-                        ]);
+                        $user = User::where(['email' => $check->email])->first();
+                        $user->email_verified_at = Carbon::now();
+                        $user->save();
 
                         DB::table('user_verification')
-                        ->where('email', $request->email)->delete();
+                        ->where('email', $request['email'])->delete();
 
                         $message = 'Your email address is verified successfully.';
                         return CustomResponse::success($message, null);
@@ -170,8 +190,8 @@ class AuthService
     {
         $check = DB::table('user_verification')
         ->where([
-            'email' => $request->email, 
-            'code' => $request->code
+            'email' => $request['email'], 
+            'code' => $request['code']
         ])->first();
         $current_time = Carbon::now();
 
@@ -180,14 +200,12 @@ class AuthService
                 if($check->expiry_time < $current_time):
                     $message = 'Verification code is expired';
                 else:
-                    $user = User::where('email', $check->email)->first();
-                    User::where('id', $user->id)
-                    ->update([
-                        'email_verified_at' => $current_time
-                    ]);
+                    $user = User::where(['email' => $check->email])->first();
+                    $user->email_verified_at = Carbon::now();
+                    $user->save();
 
                     DB::table('user_verification')
-                    ->where('email', $request->email)->delete();
+                    ->where('email', $request['email'])->delete();
 
                     $message = 'Your email address is verified successfully.';
                     return CustomResponse::success($message, null);
@@ -201,16 +219,15 @@ class AuthService
 
     public function resetPassword(ResetPassword $request)
     {
-        $user = User::where(['email' => $request->email])->first();
+        $user = User::where(['email' => $request['email']])->first();
         $token = mt_rand(1000, 9999);
-        $expiry_time = Carbon::now()->addMinutes(6);
 
         try{
             PasswordReset::updateOrCreate([
                 'email' => $user->email
             ],[
                 'token' => $token,
-                'expiry_time' => $expiry_time
+                'expiry_time' => Carbon::now()->addMinutes(6)
             ]);
             $message = 'A password reset email has been sent! Please check your email.';    
 
@@ -233,23 +250,23 @@ class AuthService
 
         $tokenedUser = DB::table('password_resets')
         ->where([
-            'token' => $request->token, 
-            'email' => $request->email
+            'token' => $request['token'], 
+            'email' => $request['email']
         ])->first();
 
         if(!is_null($tokenedUser)):
             if($tokenedUser->expiry_time > Carbon::now()):
                 return view('auth.password-reset', [
-                    'email' => $request->email
+                    'email' => $request['email']
                 ]);
             endif;
         endif;
     }
 
-    public function password_reset(PassReset $request)
+    public function passwordReset(PassReset $request)
     {   
         try{
-            $user = User::where(['email' => $request->email])->first();
+            $user = User::where(['email' => $request['email']])->first();
             $resetUser = new ResetUserPassword;
             $reset = $resetUser->reset($user, $request->input());
 
@@ -262,7 +279,7 @@ class AuthService
         return CustomResponse::success($message, null);
     }
 
-    public function change_password(ChangePassword $request)
+    public function changePassword(ChangePassword $request)
     {
         $user = auth()->user();
         try{
@@ -283,21 +300,6 @@ class AuthService
         }
         
         return CustomResponse::error($message, 400);
-    }
-
-    public function saveFCMToken(Request $request)
-    {
-        $user = auth()->user();
-        try{
-            $user->fcm_token = $request->token;
-            $user->save();
-
-            $message = 'FCM token updated successfully';
-        }catch(\Exception $e){
-            $error_message = $e->getMessage();
-            return CustomResponse::error($error_message);
-        }
-        return CustomResponse::success($message, null);
     }
 
     public function createAdmin(CreateUser $request)

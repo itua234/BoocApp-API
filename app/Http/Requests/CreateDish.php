@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreateUser extends FormRequest
+class CreateDish extends FormRequest
 {
     
     public function authorize()
@@ -17,15 +17,7 @@ class CreateUser extends FormRequest
     public function rules()
     {
         return [
-            'firstname'   =>  "required|string|max:50",
-            'lastname'     =>  "required|string|max:70",
-            'email'     => "required|email|max:255|unique:users,email",
-            'phone' => "required",
-            'gender' => 'nullable|string',
-            'password'  =>   'required|min:8|confirmed',
-            'password_confirmation' => 'required',
-            'user_type' => 'required|string',
-            'referral_code' => ''
+            
         ];
     }
 

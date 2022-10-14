@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\WalletService;
 use App\Services\TransactionService;
-use App\Http\Requests\{InitiateDeposit, TransferRequest, ResolveAccount, WalletPin};
+use App\Http\Requests\{
+    InitiateDeposit, 
+    TransferRequest, 
+    ResolveAccount,
+};
 
 class WalletController extends Controller
 {
@@ -51,16 +55,6 @@ class WalletController extends Controller
     public function checkUserBankDetails()
     {
         return $this->walletService->checkUserBankDetails();
-    }
-
-    public function setWalletPin(WalletPin $request)
-    {
-        return $this->walletService->setWalletPin($request);
-    }
-
-    public function checkWalletPin(WalletPin $request)
-    {
-        return $this->walletService->checkWalletPin($request);
     }
 
 }

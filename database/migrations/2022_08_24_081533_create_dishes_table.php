@@ -20,8 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('dish_categories')->onDelete('cascade');
             $table->string('name');
-            $table->string('description');
-            $table->string('image');
+            $table->string('description')->nullable();
+            $table->string('image')->nullable();
             $table->string('measurement');
             $table->string('price');
             $table->string('profit');

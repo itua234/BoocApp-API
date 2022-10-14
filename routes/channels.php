@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -17,10 +18,14 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('message.{$userId}', function($user, $userId){
-    return (int) $user->id === (int) $userId;
+Broadcast::channel('order.{orderId}', function($user, $orderId){
+    return (int) $user->id === Order::findOrFail($orderId)->chef_id;
 });
 
-Broadcast::channel('coordinates.{$userId}', function($user, $userId){
-    return (int) $user->id === (int) $userId;
+Broadcast::channel('rescheduled.{orderId}', function($user, $orderId){
+    return (int) $user->id === Order::findOrFail($orderId)->user_id;
+});
+
+Broadcast::channel('newprice.{orderId}', function($user, $orderId){
+    return (int) $user->id === Order::findOrFail($orderId)->user_id;
 });

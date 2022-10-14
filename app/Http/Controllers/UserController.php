@@ -5,10 +5,17 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Interfaces\IUserInterface;
-use Illuminate\Support\Facades\{DB, Http};
-use App\Models\{User, Role, UserProfile, ChefProfile};
+use Illuminate\Support\Facades\{
+    DB, 
+    Http
+};
+use App\Models\{
+    Role, 
+    Service
+};
 use App\Http\Requests\{
-    DeleteUser, SavePhoto
+    DeleteUser, 
+    SavePhoto
 };
 
 class UserController extends Controller
@@ -23,27 +30,16 @@ class UserController extends Controller
     public function setServiceTypes(Request $request)
     {
         foreach($request->service as $service){
-            DB::table('services')
-            ->insert([
-                "service_type" => $service,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
+            Service::create([
+                "service_type" => $service
             ]);
         }
         return response()->json(['success'=> true]);
     }
 
-    public function createRoles(Request $request)
+    public function storeFcmToken(Request $request)
     {
-        foreach($request->roles as $role){
-            DB::table('roles')
-            ->insert([
-                "name" => $role,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
-        }
-        return response()->json(['success'=> true]);
+        return $this->userInterface->storeFcmToken($request);
     }
 
     public function delete(DeleteUser $request)
@@ -51,14 +47,44 @@ class UserController extends Controller
         return $this->userInterface->delete($request);
     }
 
+    public function updateProfilePhoto(SavePhoto $request)
+    {
+        return $this->userService->updateProfilePhoto($request);
+    }
+
+    public function updateProfileData(Request $request)
+    {
+        return $this->userService->updateProfileData($request);
+    }
+
     public function getChefsByServiceTypes(Request $request, $Id)
     {
         return $this->userInterface->getChefsByServiceTypes($request, $Id);
     }
 
-    public function getChefDetails($Id)
+    public function getUserData($userId)
     {
-        return $this->userInterface->getChefDetails($Id);
+        return $this->userInterface->getUserData($userId);
+    }
+
+    public function newsletter(Request $request)
+    {
+        return $this->userInterface->newsletter($request);
+    }
+
+    public function sendPushNotification(Request $request)
+    {
+        return $this->userService->sendPushNotification($request);
+    }
+
+    public function updateAddressInfo(Request $request)
+    {
+        return $this->userService->updateAddressInfo($request);
+    }
+
+    public function chefVerification(Request $request)
+    {
+        return $this->userService->chefVerification($request);
     }
     
 }

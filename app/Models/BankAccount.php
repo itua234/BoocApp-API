@@ -23,7 +23,6 @@ class BankAccount extends Model
         'id',
         'created_at',
         'updated_at',
-        'bank_code',
         'wallet_id',
     ];
 

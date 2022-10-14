@@ -46,9 +46,9 @@ class AuthController extends Controller
         return $this->authService->sendverificationcode($email);
     }
 
-    public function verifyUser(VerifyAccount $request)
+    public function verifyEmail(VerifyAccount $request)
     {
-        return $this->authService->verifyUser($request);
+        return $this->authService->verifyEmail($request);
     }
 
     public function verifyUserThroughWeb(VerifyAccount $request)
@@ -56,29 +56,24 @@ class AuthController extends Controller
         return $this->authService->verifyUserThroughWeb($request);
     }
 
-    public function resetPassword(ResetPassword $request)
-    {
-        return $this->authService->resetPassword($request);
-    }
-
     public function verifyResetToken(Request $request)
     {
         return $this->authService->verifyResetToken($request);
     }
 
-    public function password_reset(PassReset $request)
+    public function resetPassword(ResetPassword $request)
     {
-        return $this->authService->password_reset($request);
+        return $this->authService->resetPassword($request);
     }
 
-    public function change_password(ChangePassword $request)
+    public function passwordReset(PassReset $request)
     {
-        return $this->authService->change_password($request);
+        return $this->authService->passwordReset($request);
     }
 
-    public function saveFCMToken(Request $request)
+    public function changePassword(ChangePassword $request)
     {
-        return $this->authService->saveFCMToken($request);
+        return $this->authService->changePassword($request);
     }
 
     public function createAdmin(CreateUser $request)

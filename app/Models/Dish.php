@@ -25,16 +25,14 @@ class Dish extends Model
         'updated_at',
     ];
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(DishCategory::class);
     }
 
-    public function chef(){
-        return $this->belongsTo(User::class);
+    public function chef()
+    {
+        return $this->belongsTo(User::class, 'chef_id');
     }
-
-    /*public function extra(){
-        return $this->hasOne(DishExtra::class);
-    }*/
 
 }
