@@ -21,10 +21,10 @@ return new class extends Migration
             $table->string('id_card_url')->nullable();
             $table->string('video_url')->nullable();
 
-            $table->enum('is_certified', [0, 1])->default(0);
+            $table->boolean('is_certified')->default(0);
             $table->string('certificate_url')->nullable();
 
-            $table->enum('is_restaurant', [0, 1])->default(0);
+            $table->boolean('is_restaurant')->default(0);
             $table->string('cac_reg_number')->nullable();
             $table->string('restaurant_name')->nullable();
             $table->string('restaurant_address', 255)->nullable();

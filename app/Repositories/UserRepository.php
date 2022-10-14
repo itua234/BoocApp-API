@@ -16,7 +16,8 @@ use App\Services\FCMService;
 use App\Interfaces\IUserInterface;
 use Illuminate\Support\Facades\{
     DB, 
-    Http
+    Http,
+    Validator
 };
 use App\Http\Requests\{
     DeleteUser, 
@@ -103,7 +104,6 @@ class UserRepository implements IUserInterface
             'state' => $request["profile"]["state"],
             'city' => $request["profile"]["city"],
             'nearest_landmark' => $request["profile"]["landmark"],
-            //'video_verification_url' => $request["profile"]["video"]
         ]);
         
         $message = "Profile updated Successfully";
@@ -164,10 +164,10 @@ class UserRepository implements IUserInterface
         $user = auth()->user();
 
         $user->profile()->update([
-            'address' => $request["profile"]["address"],
-            'state' => $request["profile"]["state"],
-            'city' => $request["profile"]["city"],
-            'nearest_landmark' => $request["profile"]["landmark"],
+            'address' => $request["address"],
+            'state' => $request["state"],
+            'city' => $request["city"],
+            'nearest_landmark' => $request["nearest_landmark"],
             //'video_verification_url' => $request["profile"]["video"]
         ]);
         
@@ -184,6 +184,8 @@ class UserRepository implements IUserInterface
             'cac_reg_number' => 'nullable',
             'restaurant_name' => 'nullable|string',
             'restaurant_address' => 'nullable|string',
+            'home_service' => 'integer',
+            'occasion_service' => 'integer'
         ]);
         if($validator->fails()):
             return response([
@@ -210,11 +212,11 @@ class UserRepository implements IUserInterface
             'id_card_url' => $urls[0],
             'video_url' => $urls[1],
             'is_certified' => $request['is_certified'],
-            'certificate_url' => ($request['is_certified'] === 1) ? $urls[2] : NULL,
+            'certificate_url' => ((int)$request['is_certified'] === 1) ? $urls[2] : NULL,
             'is_restaurant' => $request['is_restaurant'],
-            'cac_reg_number' => ($request['is_restaurant'] === 1) ? $request['cac_reg_number'] : NULL,
-            'restaurant_name' => ($request['is_restaurant'] === 1) ? $request['restaurant_name'] : NULL,
-            'restaurant_address' => ($request['is_restaurant'] === 1) ? $request['restaurant_address'] : NULL,
+            'cac_reg_number' => ((int)$request['is_restaurant'] === 1) ? $request['cac_reg_number'] : NULL,
+            'restaurant_name' => ((int)$request['is_restaurant'] === 1) ? $request['restaurant_name'] : NULL,
+            'restaurant_address' => ((int)$request['is_restaurant'] === 1) ? $request['restaurant_address'] : NULL,
         ]);
         $user->services()->attach(1);
         if($request['home_service'] == 1):

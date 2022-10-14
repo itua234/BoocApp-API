@@ -58,7 +58,7 @@ class OrderService
 
         $this->saveOrderDetails($order, $request->all());
 
-        //OrderPlaced::dispatch($order);
+        OrderPlaced::dispatch($order);
         return CustomResponse::success("Payment Link:", $order->fresh());
     }
 
@@ -182,7 +182,7 @@ class OrderService
 
         PriceChanged::dispatch($order->fresh());
 
-        $message = "The order rescheduled date has been sent to the customer";
+        $message = "A new price has been sent to the customer";
         return CustomResponse::success($message, $order->fresh());
     }
 }

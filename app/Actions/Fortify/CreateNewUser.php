@@ -8,7 +8,8 @@ use App\Mail\VerifyAccountMail;
 use App\Models\{
     User, 
     ReferralCode,
-    UserProfile
+    UserProfile,
+    ChefProfile
 };
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;

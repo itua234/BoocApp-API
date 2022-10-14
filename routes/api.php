@@ -73,14 +73,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     });
 
     Route::get("/get-chefs/{Id}", [UserController::class, "getChefsByServiceTypes"]);
-    //Route::get("/chef/{Id}", [UserController::class, "getChefDetails"]);
-    //Route::get("/user/{$Id}", [UserController::class, "getUserDetails"]);
 
     Route::group([
         'prefix' => 'wallet'
     ], function () {
         Route::get("/", [WalletController::class, "getWallet"]);
-        Route::get("/bank-detail/", [UserController::class, "getBankDetails"]);
+        Route::get("/bank-detail/", [WalletController::class, "checkUserBankDetails"]);
         Route::post("/resolve", [WalletController::class, "resolveAccount"]);
         Route::post("/transfer", [WalletController::class, "transfer"]);
     });
@@ -103,6 +101,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     ], function () {
         Route::get("/{id}", [OrderController::class, "show"]);
         Route::post("/", [OrderController::class, "order"]);
+        Route::post("/reschedule/{orderId}", [OrderController::class, "rescheduleOrder"]);
+        Route::post("/quote-new-price/{orderId}", [OrderController::class, "quoteNewPrice"]);
     });
 });
 

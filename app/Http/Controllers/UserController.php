@@ -49,12 +49,12 @@ class UserController extends Controller
 
     public function updateProfilePhoto(SavePhoto $request)
     {
-        return $this->userService->updateProfilePhoto($request);
+        return $this->userInterface->updateProfilePhoto($request);
     }
 
     public function updateProfileData(Request $request)
     {
-        return $this->userService->updateProfileData($request);
+        return $this->userInterface->updateProfileData($request);
     }
 
     public function getChefsByServiceTypes(Request $request, $Id)
@@ -79,12 +79,12 @@ class UserController extends Controller
 
     public function updateAddressInfo(Request $request)
     {
-        return $this->userService->updateAddressInfo($request);
+        return $this->userInterface->updateAddressInfo($request);
     }
 
     public function chefVerification(Request $request)
     {
-        return $this->userService->chefVerification($request);
+        return $this->userInterface->chefVerification($request);
     }
     
 }

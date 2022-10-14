@@ -18,4 +18,14 @@ class OrderController extends Controller
     {
         return $this->orderService->order($request);
     }
+
+    public function rescheduleOrder(Request $request, $orderId)
+    {
+        return $this->orderService->rescheduleOrder($request, $orderId);
+    }
+
+    public function quoteNewPrice(Request $request, $orderId)
+    {
+        return $this->orderService->quoteNewPrice($request, $orderId);
+    }
 }
