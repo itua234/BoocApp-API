@@ -27,7 +27,7 @@ class User extends Authenticatable
         'gender',
         'password',
         'user_type',
-        'is_verified',
+        'status',
         'latitude',
         'longitude',
         'available',
@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     protected $with = ['wallet'];
 
-    protected $appends = ['profile', 'referral_code'];
+    protected $appends = ['profile'];
 
     protected function firstname(): Attribute
     {
@@ -102,7 +102,8 @@ class User extends Authenticatable
         return $this->hasOne(Wallet::class);
     }
 
-    public function profile(){
+    public function profile()
+    {
         if($this->user_type == 'chef'):
             return $this->chefProfile()->first();
         elseif($this->user_type == 'user'):
@@ -112,62 +113,60 @@ class User extends Authenticatable
         endif;
     }
 
+    public function userProfile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function chefProfile()
+    {
+        return $this->hasOne(ChefProfile::class);
+    }
+
     public function getProfileAttribute()
     {
         return $this->profile();
     }
 
-    public function userProfile()
+    public function getFullNameAttribute()
     {
-        return $this->hasOne(UserProfile::class);
-    } 
-
-    public function chefProfile()
-    {
-        return $this->hasOne(ChefProfile::class);
-    } 
-
-    public function referralCode()
-    {
-        return $this->hasOne(ReferralCode::class, 'user_id');
+        return $this->firstname. " ".$this->lastname;
     }
 
-    public function getReferralCodeAttribute()
+    public function referral()
     {
-        return $this->referralCode()->pluck('code')[0] ?? null;
+        return $this->hasOne(Referral::class, 'user_id');
     }
 
     public function orders()
     {
         if($this->user_type == 'chef'):
-            return $this->hasMany(Order::class, 'chef_id');
+            return $this->chefOrders();
         elseif($this->user_type == 'user'):
-            return $this->hasMany(Order::class, 'user_id');
+            return $this->userOrders();
         else:
             return null;
         endif;
+    }
+
+    public function userOrders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    public function chefOrders()
+    {
+        return $this->hasMany(Order::class, 'chef_id');
     }
 
     public function extras()
     {
-        if($this->user_type == 'chef'):
-            return $this->hasMany(DishExtra::class);
-        elseif($this->user_type == 'user'):
-            return null;
-        else:
-            return null;
-        endif;
+        return $this->hasMany(DishExtra::class, 'chef_id');
     }
 
     public function dishes()
     {
-        if($this->user_type == 'chef'):
-            return $this->hasMany(Dish::class);
-        elseif($this->user_type == 'user'):
-            return null;
-        else:
-            return null;
-        endif;
+        return $this->hasMany(Dish::class, 'chef_id');
     }
 
     public function services()

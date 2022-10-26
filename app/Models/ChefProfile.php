@@ -17,7 +17,6 @@ class ChefProfile extends Model
         'state',
         'address',
         'nearest_landmark',
-        'status',
         'rating',
 
         'id_card_url',

@@ -5,7 +5,6 @@ namespace App\Interfaces;
 use Illuminate\Http\Request;
 use App\Http\Requests\{
     DeleteUser, 
-    SavePhoto
 };
 
 interface IUserInterface
@@ -14,11 +13,9 @@ interface IUserInterface
 
     public function delete(DeleteUser $request);
 
-    public function updateProfilePhoto(SavePhoto $request);
+    public function updateProfilePhoto(Request $request);
 
     public function updateProfileData(Request $request);
-
-    public function getChefsByServiceTypes(Request $request, $Id);
 
     public function getUserData($userId);
 
@@ -30,4 +27,17 @@ interface IUserInterface
 
     public function chefVerification(Request $request);
 
+    public function getAllChefsByService(Request $request, $id);
+
+    public function getAllChefs();
+
+    public function filterChefs();
+
+    public function reviewChef(Request $request);
+
+    public function reviewClient(Request $request);
+
+    public function fetchReferralData($userId);
+
+    public function fetchReports($userId);
 }

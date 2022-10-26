@@ -15,7 +15,6 @@ use App\Models\{
 };
 use App\Http\Requests\{
     DeleteUser, 
-    SavePhoto
 };
 
 class UserController extends Controller
@@ -47,7 +46,7 @@ class UserController extends Controller
         return $this->userInterface->delete($request);
     }
 
-    public function updateProfilePhoto(SavePhoto $request)
+    public function updateProfilePhoto(Request $request)
     {
         return $this->userInterface->updateProfilePhoto($request);
     }
@@ -55,11 +54,6 @@ class UserController extends Controller
     public function updateProfileData(Request $request)
     {
         return $this->userInterface->updateProfileData($request);
-    }
-
-    public function getChefsByServiceTypes(Request $request, $Id)
-    {
-        return $this->userInterface->getChefsByServiceTypes($request, $Id);
     }
 
     public function getUserData($userId)
@@ -85,6 +79,31 @@ class UserController extends Controller
     public function chefVerification(Request $request)
     {
         return $this->userInterface->chefVerification($request);
+    }
+
+    public function  getAllChefsByService(Request $request, $id)
+    {
+        return $this->userInterface-> getAllChefsByService($request, $id);
+    }
+
+    public function getAllChefs()
+    {
+        return $this->userInterface->getAllChefs();
+    }
+
+    public function fetchReferralData($userId)
+    {
+        return $this->userInterface->fetchReferralData($userId);
+    }
+
+    public function withdrawReferralEarnings(Request $request)
+    {
+        return $this->userInterface->withdrawReferralEarnings($request);
+    }
+
+    public function fetchReports($userId)
+    {
+        return $this->userInterface->fetchReports($userId);
     }
     
 }

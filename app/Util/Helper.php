@@ -2,7 +2,7 @@
 
 namespace App\Util;
 
-use App\Models\ReferralCode;
+use App\Models\Referral;
 
 class Helper
 {
@@ -25,7 +25,7 @@ class Helper
         $prefix = substr($name, 0, 3);
         $referralCode = strtoupper($prefix . $suffix);
 
-        $refExist = ReferralCode::where('code', $referralCode)->get();
+        $refExist = Referral::where('code', $referralCode)->get();
         if ($refExist->count() > 0) {
             $numExist = $refExist->count() + 1;
             self::generateReferral("{$numExist}{$name}");

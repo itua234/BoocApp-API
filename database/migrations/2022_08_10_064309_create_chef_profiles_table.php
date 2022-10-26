@@ -34,7 +34,6 @@ return new class extends Migration
             $table->string('nearest_landmark')->nullable();
             $table->string('state')->nullable();
             $table->double('rating')->default(0);
-            $table->enum('status', ['pending', 'active', 'suspended'])->default('pending');
             $table->timestamps();
         });
     }

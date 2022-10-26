@@ -70,9 +70,18 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
         Route::post("/send-push-notification", [UserController::class, "sendPushNotification"]);
         Route::post("/update-address-info/", [UserController::class, "updateAddressInfo"]);
         Route::post("/update-chef-info/", [UserController::class, "chefVerification"]);
+        Route::get("/{userId}/orders", [OrderController::class, "fetchOrders"]);
+        Route::get("/{userId}/reports", [UserController::class, "fetchReports"]);
+        Route::get("/{userId}/referral", [UserController::class, "fetchReferralData"]);
+        Route::post("/withdraw-earnings", [UserController::class, "withdrawReferralEarnings"]);
     });
 
-    Route::get("/get-chefs/{Id}", [UserController::class, "getChefsByServiceTypes"]);
+    Route::group([
+        'prefix' => 'chefs'
+    ], function () {
+        Route::get("/", [UserController::class, "getAllChefs"]);
+        Route::get("/{id}", [UserController::class, "getAllChefsByService"]);
+    });
 
     Route::group([
         'prefix' => 'wallet'
@@ -99,11 +108,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
     Route::group([
         'prefix' => 'order'
     ], function () {
-        Route::get("/{id}", [OrderController::class, "show"]);
+        Route::get("/{id}", [OrderController::class, "viewOrder"]);
         Route::post("/", [OrderController::class, "order"]);
         Route::post("/reschedule/{orderId}", [OrderController::class, "rescheduleOrder"]);
         Route::post("/quote-new-price/{orderId}", [OrderController::class, "quoteNewPrice"]);
+        Route::post("/accept-or-decline/{orderId}/", [OrderController::class, "acceptOrDeclineOrder"]);
     });
+
 });
 
 Route::get("/malone", function(){

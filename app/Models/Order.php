@@ -25,19 +25,18 @@ class Order extends Model
         'payment_channel',
         'discount_code',
         'verified',
-        'order_no'
+        'order_no',
+        'reason_for_declining'
     ];
 
     protected $hidden = [
-        'updated_at',
+        'created_at',
         'verified'
     ];
 
-    protected $with = ['contents'];
+    protected $with = ['contents', 'detail'];
 
-    protected $appends = ['detail'];
-
-    protected function createdAt(): Attribute
+    protected function updatedAt(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => Carbon::parse($value)->toFormattedDateString(),
@@ -47,45 +46,12 @@ class Order extends Model
 
     public function detail()
     {
-        if($this->type == "HOME SERVICE"):
-            return $this->homeService()->first();
-        elseif($this->type == "DELIVERY SERVICE"):
-            return $this->deliveryService()->first();
-        elseif($this->type == "OCCASION SERVICE"):
-            return $this->occasionService()->first();
-        else:
-            return null;
-        endif;
+        return $this->hasOne(OrderDetail::class, 'order_id');
     }
-
-    public function getDetailAttribute()
-    {
-        return $this->detail();
-    }
-
-    public function homeService()
-    {
-        return $this->hasOne(HomeServiceDetail::class, 'order_id');
-    } 
-
-    public function deliveryService()
-    {
-        return $this->hasOne(DeliveryServiceDetail::class, 'order_id');
-    }
-
-    public function occasionService()
-    {
-        return $this->hasOne(OccasionServiceDetail::class, 'order_id');
-    }
-
-    /*public function dishes()
-    {
-        return $this->belongsToMany(Dish::class, 'order_contents');
-    }*/
 
     public function contents()
     {
-        return $this->hasMany(OrderContent::class);
+        return $this->hasMany(OrderContent::class, 'order_id');
     }
 
     public function chef()

@@ -10,7 +10,7 @@ use App\Util\{
     Flutterwave, 
     Helper
 };
-//use App\Http\Resources\UserResource;
+use App\Http\Resources\OrderResource;
 use App\Http\Requests\{
     LoginRequest
 };
@@ -30,8 +30,8 @@ use App\Models\{
     DishCategory, 
     Order,
     OrderContent,
-    OccasionServiceDetail,
-    DeliveryServiceDetail
+    OrderDetail,
+    EarningPayout
 };
 
 class OrderService
@@ -39,48 +39,31 @@ class OrderService
     public function order(Request $request)
     {
         $user = auth()->user();
-        $total = $request['total'];
         $reference = Helper::generateReference($user->id);
         $orderNo = mt_rand(1000, 9999);
         
-        $order = Order::create([
-            'user_id' => $user->id,
-            'chef_id' => (int) $request['chef_id'],
-            'order_no' => $orderNo,
-            'type' => strtoupper($request["order_type"]),
-            'subtotal' => $request['subtotal'],
-            'shipping_cost' => $request['shipping_cost'],
-            'subcharge' => $request['subcharge'],
-            'total' => $total,
-            'reference' => $reference,
-            'discount_code' => isset($request['discount_code']) ? $request['discount_code'] : NULL
-        ]);
-
-        $this->saveOrderDetails($order, $request->all());
-
-        OrderPlaced::dispatch($order);
-        return CustomResponse::success("Payment Link:", $order->fresh());
-    }
-
-    public function saveOrderDetails(Order $order, $data)
-    {
-        $orderType = strtoupper($data['order_type']);
-        if($orderType === 'OCCASION SERVICE'):
-            OccasionServiceDetail::create([
-                'order_id' => $order->id,
-                'occasion_type' => $data["details"]['occasion_type'],
-                'expected_guests' => (int) $data["details"]['expected_guests'],
-                'date' => $data["details"]['date'],
-                'period' => $data["details"]['period'],
-                'firstname' => $data["details"]['firstname'],
-                'lastname' => $data["details"]['lastname'],
-                'phone' => $data["details"]['phone'],
-                'address' => $data["details"]['address'],
-                'note' => $data["details"]['note'],
-                'budget' => $data["details"]['budget']
+        DB::transaction(
+            function() use (
+                $request, 
+                &$order,
+                $reference, 
+                $orderNo, 
+                $user
+            ){
+            $order = Order::create([
+                'user_id' => $user->id,
+                'chef_id' => (int) $request['chef_id'],
+                'order_no' => $orderNo,
+                'type' => strtoupper($request["order_type"]),
+                'subtotal' => $request['subtotal'],
+                'shipping_cost' => $request['shipping_cost'],
+                'subcharge' => $request['subcharge'],
+                'total' => $request['total'],
+                'reference' => $reference,
+                'discount_code' => isset($request['discount_code']) ? $request['discount_code'] : NULL
             ]);
-        elseif($orderType === 'DELIVERY SERVICE'):
-            foreach($data['cart'] as $item):
+
+            foreach($request['cart'] as $item):
                 OrderContent::create([
                     'order_id' => $order->id,
                     'dish_id' => $item['dish_id'],
@@ -91,36 +74,22 @@ class OrderService
                     'extra_price' => $item['extra_price']
                 ]);
             endforeach; 
-            DeliveryServiceDetail::create([
+            OrderDetail::create([
                 'order_id' => $order->id,
-                'date' => $data["details"]['date'],
-                'period' => $data["details"]['period'],
-                'firstname' => $data["details"]['firstname'],
-                'lastname' => $data["details"]['lastname'],
-                'phone' => $data["details"]['phone'],
-                'address' => $data["details"]['address'],
-                'note' => $data["details"]['note'],
+                'date' => $request["details"]['date'],
+                'period' => $request["details"]['period'],
+                'firstname' => $request["details"]['firstname'],
+                'lastname' => $request["details"]['lastname'],
+                'phone' => $request["details"]['phone'],
+                'address' => $request["details"]['address'],
+                'note' => $request["details"]['note'],
+                //'is_filled_gas' => $request['is_filled_gas'],
+                //'burners' => $request['burners']
             ]);
-        elseif($orderType === 'HOME SERVICE'):
-            foreach($request['cart'] as $item):
-                $contents = $order->contents()->create([
-                    'product_id' => $data['product_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price']
-                ]);
-            endforeach;
-            $detail = $order->detail()->create([
-                'date' => $data['date'],
-                'period' => $data['period'],
-                'firstname' => $data['firstname'],
-                'lastname' => $data['lastname'],
-                'phone' => $data['phone'],
-                'address' => $data['address'],
-                'note' => $data['note'],
-                'gas_filled' => $data['gas_filled'],
-                'burners' => $data['burners']
-            ]);
-        endif;
+        });
+
+        //OrderPlaced::dispatch($order);
+        return CustomResponse::success("Order:", $order->fresh());
     }
 
     public function generatePaymentUrl($user, $channel, $total, $reference)
@@ -146,17 +115,38 @@ class OrderService
         endif;
     }
 
-    public function acceptOrder($orderId, $action)
+    public function makePayment(Request $request)
     {
+        $order = Order::find($request['id']);
+        $user = User::find($order->user_id);
+        $channel = strtoupper($request['payment_channel']);
+        $order->payment_channel = $channel;
+        $order->save();
+        $total = $order->total;
+        $reference = $order->reference;
+        $url = $this->generatePaymentUrl($user, $channel, $total, $reference);
+
+        return CustomResponse::success("Payment Link:", $url);
+    }
+
+    public function acceptOrDeclineOrder(Request $request, $orderId)
+    {
+        $action = $request['action'];
+        $reason = $request['reason'];
         $order = Order::find($orderId);
+        if($reason):
+            $order->reason_for_declining = $reason;
+        endif;
         if($action == 'accept'):
-            $status = 'confirmed';
+            $status = 'accepted';
             elseif($action == 'decline'):
                 $status = 'declined';
         endif;
-        $order->update([
-            'order_status' => $status
-        ]);
+        $order->order_status = $status;
+        $order->save();
+
+        $message = "The order with Order No:".$order->order_no." has been ".$status;
+        return CustomResponse::success($message, $order->fresh());
     }
 
     public function rescheduleOrder(Request $request, $orderId)
@@ -185,4 +175,23 @@ class OrderService
         $message = "A new price has been sent to the customer";
         return CustomResponse::success($message, $order->fresh());
     }
+
+    public function fetchOrders($userId)
+    {
+        $user = User::find($userId);
+        $orders = OrderResource::collection($user->orders);
+        /*$order = Order::where('user_id', $userId)
+        ->orWhere('chef_id', $userId)->get();*/
+        $message = "Orders:";
+        return CustomResponse::success($message, $orders);
+    }
+
+    public function viewOrder($orderId)
+    {
+        $user = auth()->user();
+        $order = Order::find($orderId);
+        $message = "Order Details:";
+        return CustomResponse::success($message, $order);
+    }
+    
 }

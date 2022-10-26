@@ -7,23 +7,20 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class EarningPayout extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'wallet_id', 
-        'type',
+        'referral_id',
         'amount', 
-        'reference', 
-        'method', 
         'status',
-        'verified'
     ];
 
     protected $hidden = [
         'created_at',
-        'deleted_at',
+        'id',
+        'referral_id'
     ];
 
     protected function amount(): Attribute
@@ -40,9 +37,8 @@ class Transaction extends Model
         );
     }
 
-    public function wallet()
+    public function referral()
     {
-        return $this->belongsTo(Wallet::class);
+        return $this->belongsTo(ReferralCode::class, 'referral_id');
     }
-
 }

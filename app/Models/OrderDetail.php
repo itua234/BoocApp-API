@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeliveryServiceDetail extends Model
+class OrderDetail extends Model
 {
     use HasFactory;
 
@@ -19,6 +19,8 @@ class DeliveryServiceDetail extends Model
         'phone',
         'address',
         'note',
+        'is_filled_gas',
+        'burners'
     ];
 
     protected $hidden = [

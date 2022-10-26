@@ -17,7 +17,6 @@ class Wallet extends Model
         'user_id',
         'balance',
         'available_balance',
-        'referral_earnings',
     ];
 
     protected $hidden = [
@@ -36,4 +35,5 @@ class Wallet extends Model
     {
         return $this->hasOne(BankAccount::class);
     }
+
 }

@@ -51,6 +51,17 @@ class DishService
 
     public function createDishCategory(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'slug' => 'string',
+        ]);
+        if($validator->fails()):
+            return response([
+                'message' => $validator->errors()->first(),
+                'error' => $validator->getMessageBag()->toArray()
+            ], 422);
+        endif;
+
         $user = auth()->user();
         $category = DishCategory::create([
             'user_id' => $user->id,
@@ -65,7 +76,18 @@ class DishService
 
     public function getCategories($chefId)
     {
-        $user = auth()->user();
+        $validator = Validator::make([
+            'chefId' => $chefId
+        ], [
+            'chefId' => 'required|integer'
+        ]);
+        if($validator->fails()):
+            return response([
+                'message' => $validator->errors()->first(),
+                'error' => $validator->getMessageBag()->toArray()
+            ], 422);
+        endif;
+
         $categories = DishCategory::with('dishes')->where([
             'user_id' => (int) $chefId
         ])->orWhere([
@@ -77,6 +99,20 @@ class DishService
 
     public function getDishes($chefId, $categoryId)
     {
+        $validator = Validator::make([
+            'chefId' => $chefId,
+            'categoryId' => $categoryId
+        ], [
+            'chefId' => 'required|integer',
+            'categoryId' => 'required|integer'
+        ]);
+        if($validator->fails()):
+            return response([
+                'message' => $validator->errors()->first(),
+                'error' => $validator->getMessageBag()->toArray()
+            ], 422);
+        endif;
+
         $dishes = Dish::where([
             'chef_id' => (int) $chefId,
             'category_id' => (int) $categoryId
@@ -87,6 +123,18 @@ class DishService
 
     public function getExtras($chefId)
     {
+        $validator = Validator::make([
+            'chefId' => $chefId
+        ], [
+            'chefId' => 'required|integer'
+        ]);
+        if($validator->fails()):
+            return response([
+                'message' => $validator->errors()->first(),
+                'error' => $validator->getMessageBag()->toArray()
+            ], 422);
+        endif;
+
         $extras = DishExtra::where([
             'chef_id' => (int) $chefId
         ])->get();

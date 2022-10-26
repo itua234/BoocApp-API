@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('user_type', ['chef', 'user', 'admin']);
             $table->string('photo')->nullable();
-            $table->enum('is_verified', ['0', '1', '2'])->default('0'); // 0 - Pending, 1 - Active, 2 - Suspended
+            $table->enum('status', ['pending', 'active', 'suspended'])->default('active');
             $table->enum('available', [0, 1])->default(1); // 0 - Offline, 1 - Online
             $table->rememberToken();
             $table->timestamps();

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\User;
 
-class UserResource extends JsonResource
+class ReportResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,13 +17,13 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            "firstname" => $this->firstname,
-            "lastname" => $this->lastname,
-            "email" => $this->email,
-            "phone" => $this->phone,
-            "longitude" => $this->longitude,
-            "latitude" => $this->latitude,
-            "wallet" => User::find($this->id)->wallet()->with('bankAccount')->first(),
+            "order_no" => $this->order_no,
+            "type" => $this->type,
+            "client_name" => User::find($this->user_id)->fullname,
+            "status" => $this->order_status,
+            "date" => $this->updated_at,
+            "total" => $this->total,
+            "profits" => 600
         ];
     }
 }

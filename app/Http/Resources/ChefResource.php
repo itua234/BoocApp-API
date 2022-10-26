@@ -3,10 +3,13 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\User;
+use App\Models\{
+    User,
+    Dish
+};
 use Illuminate\Support\Facades\DB;
 
-class ArtisanResource extends JsonResource
+class ChefResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,16 +24,14 @@ class ArtisanResource extends JsonResource
             'id' => $this->id,
             "firstname" => $this->firstname,
             "lastname" => $this->lastname,
-            "email" => $this->email,
-            "phone" => $this->phone,
             "longitude" => $this->longitude,
             "latitude" => $this->latitude,
-            "wallet" => User::find($this->id)->wallet()->with('bankAccount')->first(),
-            //"rating" => $this->rating,
-            //"town" => $this->town,
-            //"completed_jobs" => 28,
-            //"distance" => isset($this->distance) ? $this->distance : 0,
-            //"reviews" => User::find($this->user_id)->reviews
+            "photo" => $this->photo,
+            "rating" => $this->profile['rating'],
+            "is_certified" => $this->profile['is_certified'],
+            "is_restaurant" => $this->profile['is_restaurant'],
+            "dishes" => count($this->dishes),
+            "service" => $this->services->pluck('service_type')
         ];
     }
 }

@@ -13,7 +13,7 @@ use App\Models\{
     Transaction, 
     Wallet, 
     User, 
-    BankAccount
+    BankAccount,
 };
 use App\Http\Requests\{
     ResolveAccount
@@ -68,7 +68,7 @@ class WalletService
 
     public function getWallet()
     {
-        $wallet = auth()->user()->wallet()->with('bankAccount')->first();
+        $wallet = auth()->user()->wallet;
         try{
             return CustomResponse::success('successful', $wallet);
         }catch(\Exception $e){

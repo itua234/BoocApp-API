@@ -7,7 +7,7 @@ use App\Util\Helper;
 use App\Mail\VerifyAccountMail;
 use App\Models\{
     User, 
-    ReferralCode,
+    Referral,
     UserProfile,
     ChefProfile
 };
@@ -39,30 +39,30 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => $input['password'],
                 'user_type' => $input['user_type'],
                 'gender' => isset($input['gender']) ? $input['gender'] : NULL,
-                'is_verified' => ($input['user_type'] == 'chef') ? '0' : '1'
+                //'is_verified' => ($input['user_type'] == 'chef') ? '0' : '1'
             ]), function (User $user) use ($input) {
                 $user->attachRole($input['user_type']);
 
                 if($input['user_type'] != "admin"):
-                    if($input['user_type'] == "chef")
+                    if($input['user_type'] == "chef"):
                         ChefProfile::create([
                             'user_id' => $user->id
                         ]);
-                    else if($input['user_type'] == "user"):
-                        UserProfile::create([
-                            'user_id' => $user->id
-                        ]);
+                        elseif($input['user_type'] == "user"):
+                            UserProfile::create([
+                                'user_id' => $user->id
+                            ]);
                     endif;
 
                     $user->wallet()->create([]);
 
-                    $user->referralCode()->create([
+                    $user->referral()->create([
                         'code' => Helper::generateReferral($user->firstname),
                         'type' =>  ($input['user_type'] == 'chef') ? 'chef' : 'user'
                     ]);
 
                     if(isset($input['referral_code'])):
-                        $code = ReferralCode::where([
+                        $code = Referral::where([
                             'code' => $input['referral_code'
                         ]])->first();
                         if($code):

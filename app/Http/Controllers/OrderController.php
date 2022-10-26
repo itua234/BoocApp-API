@@ -19,6 +19,16 @@ class OrderController extends Controller
         return $this->orderService->order($request);
     }
 
+    public function makePayment(Request $request)
+    {
+        return $this->orderService->makePayment($request);
+    }
+
+    public function acceptOrDeclineOrder(Request $request, $orderId)
+    {
+        return $this->orderService->acceptOrDeclineOrder($request, $orderId);
+    }
+
     public function rescheduleOrder(Request $request, $orderId)
     {
         return $this->orderService->rescheduleOrder($request, $orderId);
@@ -28,4 +38,16 @@ class OrderController extends Controller
     {
         return $this->orderService->quoteNewPrice($request, $orderId);
     }
+
+    public function fetchOrders($userId)
+    {
+        return $this->orderService->fetchOrders($userId);
+    }
+
+    public function viewOrder($orderId)
+    {
+        return $this->orderService->viewOrder($orderId);
+    }
+    
+
 }

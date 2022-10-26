@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('referral_codes', function (Blueprint $table) {
+        Schema::create('earning_payouts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('code');
-            $table->enum('type', ['user', 'chef']);
+            $table->unsignedBigInteger('referral_id');
+            $table->foreign('referral_id')->references('id')->on('referrals')->onDelete('cascade');
+            $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
+            $table->integer('amount');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('referral_codes');
+        Schema::dropIfExists('earning_payouts');
     }
 };
