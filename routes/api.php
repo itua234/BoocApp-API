@@ -2,17 +2,26 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{
-    Route, 
-    Auth, 
-    DB
+    Route, DB
 };
 use App\Http\Controllers\{
-    AuthController, 
-    UserController,
-    WalletController, 
-    DishController, 
-    OrderController
+        AuthController, 
+            UserController,
+                WalletController, 
+                    DishController, 
+                        OrderController
 };
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+Route::get('/', function () {
+    return [
+        'app' => 'BoocApp API',
+        'version' => '1.0.0',
+    ];
+});
 
 Route::group(['prefix' => 'v1'], function () {
     Route::post("/create-service-types", [UserController::class, "setServiceTypes"]);
@@ -25,8 +34,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post("/google/login", [AuthController::class, "requestTokenGoogle"]);
         Route::post("/resend-code/{email}", [AuthController::class, "sendcode"]);
         Route::post("/email/verify/{email}/{code}", [AuthController::class, "verifyEmail"]);
-        Route::post("/password/reset", [AuthController::class, "resetPassword"]);
-        Route::post("/reset-password", [AuthController::class, "passwordReset"]);
+
+        Route::group(['prefix' => 'password'], function () {
+            Route::post('forgot', [AuthController::class, "resetPassword"]);
+            Route::put('reset', [AuthController::class, "passwordReset"]);
+        });
+
+        Route::get("/logout", [AuthController::class, "logout"])->middleware('auth:sanctum');
+        Route::post("/refresh", [AuthController::class, "refresh"])->middleware('auth:sanctum');
+        Route::post("/change-password", [AuthController::class, "changePassword"])->middleware('auth:sanctum');
     });
 
     Route::get("/banks", [WalletController::class, "fetchBanks"]);
@@ -43,20 +59,12 @@ Route::group(['prefix' => 'v1'], function () {
         'middleware' => ['verify.paystack']
     ], function () {
         //Route::post("/transfer/webhook", [UserController::class, "transferWebhook"]);
-        //Route::post("/transfer/webhook", [UserController::class, "transferWebhook"]);
     });
 });
 
 
 //protected route using Laravel Sanctum
 Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']],function(){
-    Route::group([
-        'prefix' => 'auth'
-    ], function () {
-        Route::get("/logout", [AuthController::class, "logout"]);
-        Route::post("/refresh", [AuthController::class, "refresh"]);
-        Route::post("/change-password", [AuthController::class, "changePassword"]);
-    });
     
     Route::group([
         'prefix' => 'user'
